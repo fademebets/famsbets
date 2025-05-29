@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern EV Calculator - FadeMeBets</title>
+    <link rel="icon" href="/logo.png"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Styles */
+        nav {
+            background-color: #c8102e;
+            padding: 1rem 2rem;
+            color: white;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        nav .logo-container img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        nav .menu {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        nav .menu a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        nav .menu a:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            font-weight: 600;
+            font-size: 16px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px 16px;
+            font-family: inherit;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .dropbtn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #a70c23;
+            min-width: 160px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            z-index: 1;
+            margin-top: 8px;
+            padding: 8px 0;
+            right: 0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f0a500;
+            color: white;
+        }
+
+        /* Mobile Menu Toggle */
+        .sidebar-toggle {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            margin-left: auto;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: linear-gradient(180deg, #1c2a39 0%, #2d3e50 100%);
+            padding: 1rem;
+            transform: translateX(-100%);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            display: none;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .mobile-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mobile-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-nav a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .mobile-dropdown-btn {
+            color: white;
+            background: none;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-dropdown-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .mobile-dropdown-content {
+            display: none;
+            padding-left: 20px;
+            margin-top: 0.5rem;
+        }
+
+        .mobile-dropdown-content.show {
+            display: block;
+        }
+
+        .mobile-dropdown-content a {
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Card Styling */
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin: 1.5rem 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #c8102e;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+            transform: translateY(-1px);
+        }
+
+        button {
+            font-family: 'Poppins', sans-serif;
+            padding: 1rem 2rem;
+            width: 100%;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #c8102e 0%, #a70c23 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(200, 16, 46, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(200, 16, 46, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: #333;
+            border-left: 4px solid #c8102e;
+            text-align: center;
+        }
+
+        .result strong {
+            font-size: 1.2rem;
+            color: #c8102e;
+        }
+
+        #expectedValue {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-left: 4px solid #17a2b8;
+        }
+
+        .info-section h2 {
+            color: #17a2b8;
+        }
+
+        .info-section p {
+            margin: 1rem 0;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .formula {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            text-align: center;
+            margin: 1rem 0;
+            border: 1px solid #dee2e6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            nav .menu {
+                display: none;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                display: block;
+            }
+
+            .main {
+                padding: 1rem 0.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .card h2 {
+                font-size: 1.5rem;
+            }
+
+            .input-group {
+                margin: 1rem 0;
+            }
+
+            .input-group input {
+                padding: 0.8rem;
+            }
+
+            button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .logo-text {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1rem;
+                border-radius: 12px;
+            }
+
+            .card h2 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+
+            .input-group input {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .result {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            #expectedValue {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Animation for cards */
+        .card {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading animation for button */
+        .btn-primary.calculating {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            cursor: not-allowed;
+        }
+
+        .btn-primary.calculating::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="/logo.png" alt="FadeMeBets Logo" />
+                <span class="logo-text">FadeMeBets</span>
+            </a>
+        </div>
+        <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+        <div class="menu">
+            <a href="subscribe.html">Subscribe</a>
+            <a href="ev.html">+EV</a>
+            <a href="locks.html">Lock of the Day</a>
+            <a href="standings.html">Standings</a>
+
+            <div class="dropdown">
+                <button class="dropbtn">Calculators ▼</button>
+                <div class="dropdown-content">
+                    <a href="odds.html">Odds</a>
+                    <a href="ev-calculator.html">EV Calc</a>
+                    <a href="parlay-calculator.html">Parlay Calc</a>
+                </div>
+            </div>
+
+            <a href="notifications.html">Profile</a>
+        </div>
+    </nav>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="main">
+        <!-- Sidebar with mobile navigation -->
+        <div class="sidebar" id="sidebar">
+            <h3>FadeMeBets</h3>
+
+            <!-- Mobile Navigation Menu -->
+            <div class="mobile-nav">
+                <ul>
+                    <li><a href="subscribe.html">Subscribe</a></li>
+                    <li><a href="ev.html">+EV</a></li>
+                    <li><a href="locks.html">Lock of the Day</a></li>
+                    <li><a href="standings.html">Standings</a></li>
+
+                    <!-- Mobile dropdown for calculators -->
+                    <li class="mobile-dropdown">
+                        <button class="mobile-dropdown-btn" onclick="toggleMobileDropdown()">
+                            Calculators ▼
+                        </button>
+                        <div class="mobile-dropdown-content" id="mobileDropdownContent">
+                            <a href="odds.html">Odds</a>
+                            <a href="ev-calculator.html">EV Calc</a>
+                            <a href="parlay-calculator.html">Parlay Calc</a>
+                        </div>
+                    </li>
+
+                    <li><a href="notifications.html">Profile</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>📊 Expected Value Calculator</h2>
+
+                <div class="input-group">
+                    <label for="wager">💰 Wager Amount ($)</label>
+                    <input type="number" id="wager" value="100" min="0" step="0.01" placeholder="Enter your wager amount" />
+                </div>
+
+                <div class="input-group">
+                    <label for="odds">🎯 Betting Odds (e.g. +110 or -110)</label>
+                    <input type="number" id="odds" value="110" placeholder="Enter odds (positive or negative)" />
+                </div>
+
+                <div class="input-group">
+                    <label for="winProb">📈 Win Probability (%)</label>
+                    <input type="number" id="winProb" value="60" min="0" max="100" step="0.1" placeholder="Enter win probability percentage" />
+                </div>
+
+                <button class="btn-primary" onclick="calculateEV()" id="calculateBtn">
+                    Calculate Expected Value
+                </button>
+
+                <div class="result">
+                    <strong>Expected Value:</strong> <span id="expectedValue">$0.00</span>
+                </div>
+            </div>
+
+            <div class="card info-section">
+                <h2>🎓 How to Use This EV Calculator</h2>
+                <p>The Expected Value (EV) calculator helps you determine whether a bet has positive or negative expected value over the long term.</p>
+
+                <p><strong>📋 Inputs Required:</strong></p>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li><strong>Wager:</strong> The amount you plan to bet</li>
+                    <li><strong>Odds:</strong> The sportsbook odds (use + for favorites, - for underdogs)</li>
+                    <li><strong>Win Probability:</strong> Your estimated chance of winning (as a percentage)</li>
+                </ul>
+
+                <p><strong>🧮 Formula Used:</strong></p>
+                <div class="formula">
+                    EV = (Win Probability × Profit if Win) - (Loss Probability × Wager)
+                </div>
+
+                <p><strong>💡 Example:</strong> A $100 bet on +110 odds with a 60% win probability gives you an EV of <strong>+$5.45</strong>, meaning you can expect to profit $5.45 on average per bet over many similar wagers.</p>
+
+                <p><strong>✅ Positive EV</strong> = Good bet (profitable long-term)<br>
+                <strong>❌ Negative EV</strong> = Bad bet (losing long-term)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateEV() {
+            const calculateBtn = document.getElementById('calculateBtn');
+            calculateBtn.classList.add('calculating');
+            calculateBtn.textContent = 'Calculating...';
+
+            // Add slight delay for better UX
+            setTimeout(() => {
+                const wager = parseFloat(document.getElementById('wager').value);
+                const odds = parseFloat(document.getElementById('odds').value);
+                const winProb = parseFloat(document.getElementById('winProb').value) / 100;
+
+                if (isNaN(wager) || isNaN(odds) || isNaN(winProb) || wager <= 0 || winProb < 0 || winProb > 1) {
+                    alert('Please enter valid values:\n• Wager must be positive\n• Odds can be positive or negative\n• Win probability must be between 0-100%');
+                    calculateBtn.classList.remove('calculating');
+                    calculateBtn.textContent = 'Calculate Expected Value';
+                    return;
+                }
+
+                let profitIfWin = 0;
+                if (odds > 0) {
+                    profitIfWin = (odds / 100) * wager;
+                } else {
+                    profitIfWin = (100 / Math.abs(odds)) * wager;
+                }
+
+                const expectedValue = (winProb * profitIfWin) - ((1 - winProb) * wager);
+                const evElement = document.getElementById('expectedValue');
+
+                evElement.textContent = `$${expectedValue.toFixed(2)}`;
+                evElement.style.color = expectedValue >= 0 ? '#28a745' : '#dc3545';
+
+                // Add animation to result
+                evElement.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    evElement.style.transform = 'scale(1)';
+                }, 200);
+
+                calculateBtn.classList.remove('calculating');
+                calculateBtn.textContent = 'Calculate Expected Value';
+            }, 500);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
+        function toggleMobileDropdown() {
+            const dropdownContent = document.getElementById('mobileDropdownContent');
+            dropdownContent.classList.toggle('show');
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateEV();
+            }
+        });
+
+        // Auto-calculate on input change for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // Optional: Auto-calculate after short delay
+                    // clearTimeout(this.autoCalcTimeout);
+                    // this.autoCalcTimeout = setTimeout(calculateEV, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

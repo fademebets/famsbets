@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - FadeMeBets</title>
+   <link rel="icon" href="/logo.png"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="form-container">
+    <div class="auth-logo-container">
+      <img src="/logo.png" alt="FadeMeBets Logo">
+    </div>
+    <h1>Login</h1>
+    <form id="loginForm" class="auth-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" class="auth-button">Login</button>
+    </form>
+    <p>Don't have an account? <a href="register.html">Register</a></p>
+          <p><a href="userforgetpassword.html">Forgot Password?</a></p>
+
+  </div>
+
+  <script>
+      // Redirect if already logged in
+      const token = localStorage.getItem('token');
+      const subscriptionStatus = localStorage.getItem('subscriptionStatus');
+
+      if (token && subscriptionStatus) {
+        // Change 'success.html' to wherever logged-in users should go
+        window.location.href = 'index.html';
+      }
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch('https://fademebets.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('subscriptionStatus', result.subscriptionStatus);
+        alert('Logged in successfully!');
+        window.location.href = 'success.html';
+      } else {
+        alert(result.error);
+      }
+    });
+  </script>
+
+</body>
+</html>

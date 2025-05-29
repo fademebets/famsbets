@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FadeMeBets - Subscribe</title>
+  <link rel="icon" href="/logo.png"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    /* General resets and font */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation Styles */
+    nav {
+      background-color: #c8102e;
+      padding: 1rem 2rem;
+      color: white;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    nav .logo-container {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    nav .logo-container img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    nav .menu {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav .menu a {
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    nav .menu a:hover {
+      background-color: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+      color: white;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropbtn {
+      font-weight: 600;
+      font-size: 16px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 8px 16px;
+      font-family: inherit;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .dropbtn:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #a70c23;
+      min-width: 160px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      z-index: 1;
+      margin-top: 8px;
+      padding: 8px 0;
+      right: 0;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-content a {
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f0a500;
+      color: white;
+    }
+
+    /* Mobile Menu Toggle */
+    .sidebar-toggle {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: white;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      background: none;
+      border: none;
+    }
+
+    .sidebar-toggle:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: linear-gradient(180deg, #1c2a39 0%, #2d3e50 100%);
+      padding: 1rem;
+      transform: translateX(-100%);
+      z-index: 1000;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      display: none;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar h3 {
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .mobile-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mobile-nav li {
+      margin-bottom: 0.5rem;
+    }
+
+    .mobile-nav a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-nav a:hover {
+      background-color: rgba(255,255,255,0.1);
+      transform: translateX(5px);
+    }
+
+    .mobile-dropdown-btn {
+      color: white;
+      background: none;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-dropdown-btn:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .mobile-dropdown-content {
+      display: none;
+      padding-left: 20px;
+      margin-top: 0.5rem;
+    }
+
+    .mobile-dropdown-content.show {
+      display: block;
+    }
+
+    .mobile-dropdown-content a {
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 1200px;
+      text-align: center;
+    }
+
+    .content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #c8102e;
+      font-weight: 700;
+    }
+
+    .content p {
+      font-size: 1.2rem;
+      margin-bottom: 3rem;
+      color: #666;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Subscription Plans */
+    .subscription-plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .plan-card {
+      background: white;
+      border-radius: 15px;
+      padding: 4rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(200, 16, 46, 0.2);
+      border-color: #c8102e;
+    }
+
+    .plan-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #c8102e;
+      font-weight: 700;
+    }
+
+    .price {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #c8102e;
+      margin-bottom: 1.5rem;
+    }
+
+    .features {
+      list-style: none;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .features li {
+      padding: 0.5rem 0;
+      position: relative;
+      color: #666;
+        padding-left: 2rem; /* space for the checkmark + some gap */
+
+    }
+
+  .features li:before {
+  content: "✓";
+  margin-right: 1.5rem;  /* increased from 1rem */
+  position: absolute;
+  left: -1.2rem;
+  color: #28a745;
+  font-weight: bold;
+}
+    .subscribe-button {
+      background: linear-gradient(135deg, #c8102e 0%, #a70c23 100%);
+      border: none;
+      padding: 1rem 2rem;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .subscribe-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(200, 16, 46, 0.3);
+      background: linear-gradient(135deg, #a70c23 0%, #c8102e 100%);
+    }
+
+    /* Responsive Design */
+
+    /* Large tablets and small desktops (1024px and down) */
+    @media screen and (max-width: 1024px) {
+      nav {
+        padding: 1rem 1.5rem;
+      }
+
+      nav .menu {
+        gap: 0.6rem;
+      }
+
+      nav .menu a, .dropbtn {
+        padding: 6px 12px;
+        font-size: 15px;
+      }
+
+      .logo-text {
+        font-size: 1.3rem;
+      }
+
+      nav .logo-container img {
+        height: 35px;
+      }
+
+      .content h1 {
+        font-size: 2.2rem;
+      }
+
+      .content p {
+        font-size: 1.1rem;
+      }
+
+      .subscription-plans {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+    }
+
+    /* Medium tablets (768px and down) */
+    @media screen and (max-width: 768px) {
+      nav {
+        padding: 0.8rem 1rem;
+        flex-wrap: nowrap;
+      }
+
+      .sidebar-toggle {
+        display: block;
+        order: 3;
+      }
+
+      nav .menu {
+        display: none;
+      }
+
+      .sidebar {
+        display: block;
+      }
+
+      .logo-text {
+        font-size: 1.2rem;
+      }
+
+      nav .logo-container img {
+        height: 32px;
+        margin-right: 8px;
+      }
+
+      .main {
+        padding: 1.5rem 1rem;
+      }
+
+      .content h1 {
+        font-size: 2rem;
+      }
+
+      .content p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .subscription-plans {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .plan-card {
+        padding: 1.5rem;
+      }
+
+      .price {
+        font-size: 2rem;
+      }
+    }
+
+    /* Small tablets and large phones (600px and down) */
+    @media screen and (max-width: 600px) {
+      nav {
+        padding: 0.8rem;
+      }
+
+      .logo-text {
+        font-size: 1.1rem;
+      }
+
+      nav .logo-container img {
+        height: 28px;
+        margin-right: 6px;
+      }
+
+      .sidebar {
+        width: 250px;
+      }
+
+      .main {
+        padding: 1rem 0.5rem;
+      }
+
+      .content h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .content p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .plan-card {
+        padding: 1.2rem;
+      }
+
+      .plan-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .price {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+      }
+
+      .features li {
+        padding: 0.4rem 0;
+        font-size: 0.9rem;
+      }
+
+      .subscribe-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* Mobile phones (480px and down) */
+    @media screen and (max-width: 480px) {
+      nav {
+        padding: 0.6rem;
+      }
+
+      .logo-text {
+        font-size: 1rem;
+      }
+
+      nav .logo-container img {
+        height: 24px;
+        margin-right: 5px;
+      }
+
+      .sidebar {
+        width: 220px;
+      }
+
+      .sidebar h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .mobile-nav a {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .mobile-dropdown-btn {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .main {
+        padding: 0.8rem 0.3rem;
+      }
+
+      .content h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .content p {
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .subscription-plans {
+        gap: 1rem;
+      }
+
+      .plan-card {
+        padding: 4rem;
+      }
+
+      .plan-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .price {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+      }
+
+      .features li {
+        padding: 0.3rem 0;
+        font-size: 0.85rem;
+      }
+
+      .subscribe-button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Very small phones (360px and down) */
+    @media screen and (max-width: 360px) {
+      .logo-text {
+        font-size: 0.9rem;
+      }
+
+      nav .logo-container img {
+        height: 22px;
+      }
+
+      .sidebar {
+        width: 200px;
+      }
+
+      .content h1 {
+        font-size: 1.4rem;
+      }
+
+      .content p {
+        font-size: 0.85rem;
+      }
+
+      .plan-card {
+        padding: 0.8rem;
+      }
+
+      .price {
+        font-size: 1.4rem;
+      }
+
+      .features li {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Landscape orientation adjustments for mobile */
+    @media screen and (max-height: 500px) and (orientation: landscape) {
+      nav {
+        padding: 0.5rem;
+      }
+
+      .logo-text {
+        font-size: 0.9rem;
+      }
+
+      nav .logo-container img {
+        height: 20px;
+      }
+
+      .sidebar {
+        width: 200px;
+        padding: 0.5rem;
+      }
+
+      .sidebar h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .mobile-nav a {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .main {
+        padding: 1rem 0.5rem;
+      }
+
+      .content h1 {
+        font-size: 1.5rem;
+      }
+
+      .subscription-plans {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+
+    /* Hover effects only on non-touch devices */
+    @media (hover: hover) and (pointer: fine) {
+      nav .menu a:hover,
+      .dropbtn:hover,
+      .sidebar-toggle:hover {
+        background-color: rgba(255,255,255,0.2);
+      }
+
+      .dropdown-content a:hover {
+        background-color: #f0a500;
+      }
+
+      .mobile-nav a:hover,
+      .mobile-dropdown-btn:hover {
+        background-color: rgba(255,255,255,0.1);
+      }
+
+      .plan-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(200, 16, 46, 0.2);
+        border-color: #c8102e;
+      }
+
+      .subscribe-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(200, 16, 46, 0.3);
+        background: linear-gradient(135deg, #a70c23 0%, #c8102e 100%);
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="logo-container">
+      <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+        <img src="/logo.png" alt="FadeMeBets Logo" />
+        <span class="logo-text">FadeMeBets</span>
+      </a>
+    </div>
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="menu">
+      <a href="subscribe.html">Subscribe</a>
+      <a href="ev.html">+EV</a>
+      <a href="locks.html">Lock of the Day</a>
+      <a href="standings.html">Standings</a>
+
+      <div class="dropdown">
+        <button class="dropbtn">Calculators ▼</button>
+        <div class="dropdown-content">
+          <a href="odds.html">Odds</a>
+          <a href="ev-calculator.html">EV Calc</a>
+          <a href="parlay-calculator.html">Parlay Calc</a>
+        </div>
+      </div>
+
+      <a href="notifications.html">Profile</a>
+      <a href="/login.html">Login</a>
+    </div>
+  </nav>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <div class="main">
+    <!-- Sidebar with mobile navigation -->
+    <div class="sidebar" id="sidebar">
+      <h3>FadeMeBets</h3>
+
+      <!-- Mobile Navigation Menu -->
+      <div class="mobile-nav">
+        <ul>
+          <li><a href="subscribe.html">Subscribe</a></li>
+          <li><a href="ev.html">+EV</a></li>
+          <li><a href="locks.html">Lock of the Day</a></li>
+          <li><a href="standings.html">Standings</a></li>
+
+          <!-- Mobile dropdown for calculators -->
+          <li class="mobile-dropdown">
+            <button class="mobile-dropdown-btn" onclick="toggleMobileDropdown()">
+              Calculators ▼
+            </button>
+            <div class="mobile-dropdown-content" id="mobileDropdownContent">
+              <a href="odds.html">Odds</a>
+              <a href="ev-calculator.html">EV Calc</a>
+              <a href="parlay-calculator.html">Parlay Calc</a>
+            </div>
+          </li>
+
+          <li><a href="notifications.html">Profile</a></li>
+          <li><a href="/login.html">Login</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="content">
+      <h1>Choose Your Subscription Plan</h1>
+      <p>Get access to exclusive picks, tools, and notifications to maximize your betting success.</p>
+
+      <div class="subscription-plans">
+        <div class="plan-card">
+          <h3>Monthly Plan</h3>
+          <div class="price">$2.99/mo</div>
+          <ul class="features">
+            <li>Daily Lock Picks</li>
+            <li>+EV Betting Opportunities</li>
+            <li>Real-time Odds Updates</li>
+            <li>Basic Notifications</li>
+          </ul>
+          <button class="subscribe-button" data-plan="monthly">Subscribe Now</button>
+        </div>
+
+        <div class="plan-card">
+          <h3>Quarterly Plan</h3>
+          <div class="price">$7.99/qtr</div>
+          <ul class="features">
+            <li>Everything in Monthly Plan</li>
+            <li>Priority Access to Picks</li>
+            <li>Advanced Analytics</li>
+            <li>Premium Notifications</li>
+            <li>Save 10%</li>
+          </ul>
+          <button class="subscribe-button" data-plan="quarterly">Subscribe Now</button>
+        </div>
+
+        <div class="plan-card">
+          <h3>Yearly Plan</h3>
+          <div class="price">$29.99/yr</div>
+          <ul class="features">
+            <li>Everything in Quarterly Plan</li>
+            <li>Early Access to New Features</li>
+            <li>Exclusive Bonuses</li>
+            <li>Save 17%</li>
+          </ul>
+          <button class="subscribe-button" data-plan="yearly">Subscribe Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check subscription status from localStorage
+    function checkSubscription() {
+      const subscriptionStatus = localStorage.getItem('subscriptionStatus');
+      console.log('Subscription status is:', subscriptionStatus);
+
+      // Redirect if subscriptionStatus IS 'active'
+      if (subscriptionStatus && subscriptionStatus.toLowerCase() === 'active') {
+        console.log('Subscription active, redirecting user.');
+        window.location.href = 'notifications.html'; // or the page you want to redirect to
+      } else {
+        console.log('Subscription not active, user stays on this page.');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkSubscription();
+    });
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('show');
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+
+    function toggleMobileDropdown() {
+      const dropdownContent = document.getElementById('mobileDropdownContent');
+      dropdownContent.classList.toggle('show');
+    }
+
+    // Close sidebar when clicking on a link (mobile)
+    document.querySelectorAll('.mobile-nav a').forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+
+    // Close sidebar when window is resized to desktop size
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        closeSidebar();
+      }
+    });
+
+    const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+
+    document.querySelectorAll('.subscribe-button').forEach(button => {
+      button.addEventListener('click', async (e) => {
+        const plan = e.target.dataset.plan;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('You must log in first to subscribe.');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        try {
+          const response = await fetch('https://fademebets.onrender.com/api/subscription/create-checkout-session', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ plan })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            alert(errorData.message || 'Failed to create checkout session.');
+            return;
+          }
+
+          const session = await response.json();
+          const result = await stripe.redirectToCheckout({ sessionId: session.id });
+
+          if (result.error) {
+            alert(result.error.message);
+          }
+
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred. Please try again.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

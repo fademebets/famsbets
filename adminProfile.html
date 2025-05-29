@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="adminstyle.css" />
+  <link rel="icon" href="/logo.png"/>
+
+   <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+
+</head>
+<body>
+ <header class="header">
+    <div class="logo-container">
+      <img src="/logo.png" alt="FadeMeBets Logo" />
+      <span class="logo-text">FadeMeBets</span>
+    </div>
+
+    <nav class="nav-links">
+            <a href="/admindashboard.html">Home</a>
+
+
+
+      <a href="/adminLockOfTheDay.html">Lock of the Day</a>
+      <a href="/adminev.html">EV</a>
+            <a href="/adminProfile.html">Profile</a>
+
+
+    </nav>
+
+    <button class="logout-btn" onclick="logout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16,17 21,12 16,7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Logout
+    </button>
+
+    <div class="sidebar-toggle" id="sidebarToggle" aria-label="Open sidebar" tabindex="0">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+                <a href="/admindashboard.html">Home</a>
+
+    <a href="/adminLockOfTheDay.html" onclick="closeSidebar()">Lock of the Day</a>
+    <a href="/adminev.html" onclick="closeSidebar()">EV</a>
+        <a href="/adminProfile.html" onclick="closeSidebar()">Profile</a>
+
+    <button class="logout-btn" onclick="logout(); closeSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16,17 21,12 16,7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Logout
+    </button>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+
+    <div class="main-container">
+  <div class="card">
+    <h2>Change Password</h2>
+    <form id="changePasswordForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="oldPassword" placeholder="Old Password" required />
+      <input type="password" id="newPassword" placeholder="New Password" required />
+      <button type="submit" id="changePasswordBtn">Change Password</button>
+    </form>
+  </div>
+
+  <button id="notifyBtn" onclick="notifySubscribers()">Notify Subscribers</button>
+</div>
+
+
+
+  <script>
+
+     function notifySubscribers() {
+    fetch('https://fademebets.onrender.com/api/admin/notify-lock-update', {
+      method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => alert(data.message))
+    .catch(err => console.error(err));
+  }
+
+     const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  });
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+
+
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      window.location.href = 'adminlogin.html';
+    } else {
+      fetch('https://fademebets.onrender.com/api/admin/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('adminToken');
+          window.location.href = 'adminlogin.html';
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('adminToken');
+        window.location.href = 'adminlogin.html';
+      });
+    }
+
+
+
+
+   document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const token = localStorage.getItem('adminToken');
+  if (!token) {
+    alert('Session expired. Please log in again.');
+    window.location.href = 'adminlogin.html';
+    return;
+  }
+
+  const email = document.getElementById('email').value;
+  const oldPassword = document.getElementById('oldPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+
+  fetch('https://fademebets.onrender.com/api/admin/change-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ email, oldPassword, newPassword })
+  })
+  .then(res => res.json())
+  .then(data => {
+    showToast(data.message, 'success');
+    document.getElementById('changePasswordForm').reset();
+  })
+  .catch(err => {
+    console.error(err);
+    showToast('An error occurred. Try again.', 'error');
+  });
+});
+
+
+    function logout() {
+      localStorage.removeItem('adminToken'); // Uncomment for real use
+      window.location.href = 'adminlogin.html'; // Uncomment for real use
+
+      // For demo purposes
+      showToast('Logged out successfully!', 'success');
+      console.log('Logout clicked - would redirect to adminlogin.html');
+    }
+
+    function showToast(message, type) {
+      Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: type === 'success' ?
+          "linear-gradient(to right, #10b981, #059669)" :
+          "linear-gradient(to right, #ef4444, #dc2626)",
+        stopOnFocus: true,
+        onClick: function(){}
+      }).showToast();
+    }
+
+    function setLoading(buttonId, isLoading) {
+      const button = document.getElementById(buttonId);
+      if (isLoading) {
+        button.classList.add('loading');
+        button.innerHTML = '<span class="spinner"></span>Creating...';
+      } else {
+        button.classList.remove('loading');
+        if (buttonId === 'lockSubmitBtn') {
+          button.innerHTML = 'Create Lock of the Day';
+        } else {
+          button.innerHTML = 'Create EV Bet';
+        }
+      }
+    }
+
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FadeMeBets - +EV Betting</title>
+    <link rel="icon" href="/logo.png"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+    background: #F9FAFB; /* gray-50 */
+            min-height: 100vh;
+            color: black;
+        }
+
+        /* Navigation */
+        nav {
+            background: #c8102e;
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-container img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: white;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .menu a:hover {
+            color: white;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            background: #c8102e;
+            border: none;
+            color: white;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .dropbtn:hover {
+            color: white;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #c8102e;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            z-index: 1;
+            top: 100%;
+            margin-top: 5px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            margin: 0;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Main Layout */
+        .main {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #c8102e;
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .sidebar .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar .nav-section h4 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background: white;
+            color: #c8102e;
+            transform: translateX(5px);
+        }
+
+        .filter-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .filter-section h4 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: white;
+            color: #c8102e;
+        }
+
+        /* Content */
+        .content-ev {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-ev h1 {
+            color: #c8102e;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-ev p {
+            color: #c8102e;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .items-per-page {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #c8102e;
+        }
+
+        .items-per-page select {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+            font-family: inherit;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 300px;
+                border: 1px solid black; /* added black border */
+
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        /* EV Container */
+        .ev-container {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sport-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .game-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .bookmakers-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .bookmaker-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .bookmaker-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .market {
+            margin-bottom: 1rem;
+        }
+
+        .market-title {
+            font-weight: 500;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .outcomes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .outcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 8px;
+            min-width: 120px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .outcome:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .outcome-name {
+            font-size: 0.85rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .outcome-point {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .outcome-price {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+
+        .pagination-info {
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .pagination-btn.active {
+            background: #667eea;
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
+
+        .loading, .error {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 10px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .menu {
+                display: none;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .main {
+                position: relative;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1001;
+                transform: translateX(-100%);
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                display: none;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .content-ev {
+                padding: 1rem;
+            }
+
+            .content-ev h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .bookmakers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .outcomes {
+                justify-content: center;
+            }
+
+            .pagination {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .pagination-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .content-ev h1 {
+                font-size: 1.5rem;
+            }
+
+            .game-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+
+            .outcome {
+                min-width: 100px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="/logo.png" alt="FadeMeBets Logo" />
+                <span class="logo-text">FadeMeBets</span>
+            </a>
+        </div>
+        <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+        <div class="menu">
+            <a href="subscribe.html">Subscribe</a>
+            <a href="ev.html">+EV</a>
+            <a href="locks.html">Lock of the Day</a>
+            <a href="standings.html">Standings</a>
+            <div class="dropdown">
+                <button class="dropbtn">Calculators ▼</button>
+                <div class="dropdown-content">
+                    <a href="odds.html">Odds</a>
+                    <a href="ev-calculator.html">EV Calc</a>
+                    <a href="parlay-calculator.html">Parlay Calc</a>
+                </div>
+            </div>
+            <a href="notifications.html">Profile</a>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="main">
+        <div class="sidebar" id="sidebar">
+            <div class="nav-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="subscribe.html">Subscribe</a></li>
+                    <li><a href="ev.html">+EV</a></li>
+                    <li><a href="locks.html">Lock of the Day</a></li>
+                    <li><a href="standings.html">Standings</a></li>
+                    <li><a href="odds.html">Odds Calculator</a></li>
+                    <li><a href="ev-calculator.html">EV Calculator</a></li>
+                    <li><a href="parlay-calculator.html">Parlay Calculator</a></li>
+                    <li><a href="notifications.html">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="filter-section">
+                <h4>Filter by Sports</h4>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterBySport('all')">All</button>
+                    <button class="filter-btn" onclick="filterBySport('NBA')">NBA</button>
+                    <button class="filter-btn" onclick="filterBySport('NFL')">NFL</button>
+                    <button class="filter-btn" onclick="filterBySport('NCAAF')">NCAAF</button>
+                    <button class="filter-btn" onclick="filterBySport('NCAAB')">NCAAB</button>
+                    <button class="filter-btn" onclick="filterBySport('MLB')">MLB</button>
+                    <button class="filter-btn" onclick="filterBySport('UFC')">UFC</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-ev">
+            <h1>+EV Betting Opportunities</h1>
+            <p>Find the best value bets with positive expected value across all major sports.</p>
+
+            <div class="controls">
+                <div class="items-per-page">
+                    <span>Show:</span>
+                    <select id="itemsPerPage" onchange="changeItemsPerPage()">
+                        <option value="5">5 per page</option>
+                        <option value="10" selected>10 per page</option>
+                        <option value="20">20 per page</option>
+                        <option value="50">50 per page</option>
+                    </select>
+                </div>
+
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search teams or sports..." onkeyup="searchGames()">
+                </div>
+            </div>
+
+            <div id="ev-picks" class="ev-container">
+                <div class="loading">Loading +EV picks...</div>
+            </div>
+
+            <div class="pagination" id="pagination" style="display: none;">
+                <div class="pagination-info" id="paginationInfo"></div>
+                <div class="pagination-buttons" id="paginationButtons"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allPicks = [];
+        let filteredPicks = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let currentSportFilter = 'all';
+
+        function checkSubscription() {
+            document.addEventListener("DOMContentLoaded", async () => {
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    window.location.href = "subscribe.html";
+                    return;
+                }
+
+                try {
+                    const response = await fetch('https://fademebets.onrender.com/api/auth/subscription-status', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || data.subscriptionStatus !== 'active') {
+                        window.location.href = "subscribe.html";
+                    }
+                } catch (error) {
+                    console.error("Failed to check subscription status:", error);
+                    window.location.href = "subscribe.html";
+                }
+            });
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        async function loadEVPicks() {
+            try {
+                const response = await fetch('https://fademebets.onrender.com/api/oddstrader');
+                const data = await response.json();
+
+                allPicks = data.picks || [];
+                applyFilters();
+            } catch (error) {
+                console.error('Error loading picks:', error);
+                document.getElementById('ev-picks').innerHTML =
+                    '<div class="error">Failed to load picks. Please try again later.</div>';
+            }
+        }
+
+        function applyFilters() {
+            let filtered = [...allPicks];
+
+            // Apply sport filter
+            if (currentSportFilter !== 'all') {
+                filtered = filtered.filter(pick => {
+                    const sport = formatSport(pick.sport);
+                    return sport === currentSportFilter;
+                });
+            }
+
+            // Apply search filter
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            if (searchTerm) {
+                filtered = filtered.filter(pick => {
+                    const sport = formatSport(pick.sport).toLowerCase();
+                    const teams = pick.bookmakers.flatMap(bm =>
+                        bm.markets.flatMap(m =>
+                            m.outcomes.map(o => o.name.toLowerCase())
+                        )
+                    );
+
+                    return sport.includes(searchTerm) ||
+                           teams.some(team => team.includes(searchTerm));
+                });
+            }
+
+            filteredPicks = filtered;
+            currentPage = 1;
+            displayPicks();
+            updatePagination();
+        }
+
+        function filterBySport(sport) {
+            currentSportFilter = sport;
+
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            applyFilters();
+        }
+
+        function displayPicks() {
+            const container = document.getElementById('ev-picks');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const picksToShow = filteredPicks.slice(startIndex, endIndex);
+
+            if (picksToShow.length === 0) {
+                container.innerHTML = '<div class="error">No picks found matching your criteria.</div>';
+                return;
+            }
+
+            const html = picksToShow.map(pick => createGameCard(pick)).join('');
+            container.innerHTML = html;
+        }
+
+        function createGameCard(pick) {
+            const sport = formatSport(pick.sport);
+            const gameTime = new Date(pick.commence_time).toLocaleString();
+
+            return `
+                <div class="game-card">
+                    <div class="game-header">
+                        <div class="sport-badge">${sport}</div>
+                        <div class="game-time">${gameTime}</div>
+                    </div>
+                    <div class="bookmakers-grid">
+                        ${pick.bookmakers.map(bookmaker => createBookmakerCard(bookmaker)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createBookmakerCard(bookmaker) {
+            return `
+                <div class="bookmaker-card">
+                    <div class="bookmaker-title">${bookmaker.title}</div>
+                    ${bookmaker.markets.map(market => createMarketSection(market)).join('')}
+                </div>
+            `;
+        }
+
+        function createMarketSection(market) {
+            const marketTitle = formatMarketKey(market.key);
+
+            return `
+                <div class="market">
+                    <div class="market-title">${marketTitle}</div>
+                    <div class="outcomes">
+                        ${market.outcomes.map(outcome => createOutcome(outcome)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createOutcome(outcome) {
+            const price = formatPrice(outcome.price);
+            const point = outcome.point ? ` (${outcome.point > 0 ? '+' : ''}${outcome.point})` : '';
+
+            return `
+                <div class="outcome">
+                    <div class="outcome-name">
+                        ${outcome.name}
+                        ${point ? `<span class="outcome-point">${point}</span>` : ''}
+                    </div>
+                    <div class="outcome-price">${price}</div>
+                </div>
+            `;
+        }
+
+        function formatSport(sport) {
+            const sportMap = {
+                'baseball_mlb': 'MLB',
+                'basketball_nba': 'NBA',
+                'americanfootball_nfl': 'NFL',
+                'americanfootball_ncaaf': 'NCAAF',
+                'basketball_ncaab': 'NCAAB',
+                'mma_mixed_martial_arts': 'UFC'
+            };
+            return sportMap[sport] || sport.toUpperCase();
+        }
+
+        function formatMarketKey(key) {
+            const marketMap = {
+                'h2h': 'Moneyline',
+                'spreads': 'Point Spread',
+                'totals': 'Over/Under'
+            };
+            return marketMap[key] || key;
+        }
+
+        function formatPrice(price) {
+            if (price > 0) {
+                return `+${price}`;
+            }
+            return price.toString();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredPicks.length / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+            const paginationInfo = document.getElementById('paginationInfo');
+            const paginationButtons = document.getElementById('paginationButtons');
+
+            if (totalPages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+
+            paginationContainer.style.display = 'flex';
+
+            const startItem = (currentPage - 1) * itemsPerPage + 1;
+            const endItem = Math.min(currentPage * itemsPerPage, filteredPicks.length);
+
+            paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${filteredPicks.length} picks`;
+
+            let buttonsHTML = '';
+
+            buttonsHTML += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}"
+                           onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                           ← Previous</button>`;
+
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+
+            if (startPage > 1) {
+                buttonsHTML += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) {
+                    buttonsHTML += `<span class="pagination-btn disabled">...</span>`;
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                buttonsHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}"
+                               onclick="changePage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    buttonsHTML += `<span class="pagination-btn disabled">...</span>`;
+                }
+                buttonsHTML += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+
+            buttonsHTML += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}"
+                           onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                           Next →</button>`;
+
+            paginationButtons.innerHTML = buttonsHTML;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredPicks.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+
+            currentPage = page;
+            displayPicks();
+            updatePagination();
+
+            document.querySelector('.content-ev').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function changeItemsPerPage() {
+            itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
+            currentPage = 1;
+            displayPicks();
+            updatePagination();
+        }
+
+        function searchGames() {
+            applyFilters();
+        }
+
+        // Initialize page
+        window.addEventListener('DOMContentLoaded', () => {
+            checkSubscription();
+            loadEVPicks();
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.sidebar-toggle');
+
+            if (window.innerWidth <= 768 &&
+                sidebar.classList.contains('open') &&
+                !sidebar.contains(e.target) &&
+                !toggle.contains(e.target)) {
+                toggleSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

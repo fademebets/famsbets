@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Parlay Calculator - FadeMeBets</title>
+    <link rel="icon" href="/logo.png"/>
+   <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      body {
+    background: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar styling */
+nav {
+    background: #c8102e;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 30px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-container img {
+    height: 36px;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: #c8102e;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.menu a:hover {
+    color: #c8102e;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropbtn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: #c8102e;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    margin-top: 10px;
+    min-width: 160px;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+.dropdown-content a:hover {
+    background: #f0f0f0;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Main content centering */
+.main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.content {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Card Styling */
+.card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.info-row strong {
+    color: #222;
+}
+
+.input-group {
+    margin: 20px 0 10px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.parlay-leg {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.parlay-leg input {
+    flex: 1;
+    padding: 0.85rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #f9f9f9;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+}
+
+.parlay-leg input::placeholder {
+    color: #aaa;
+}
+
+.parlay-leg input:focus {
+    border-color: #c8102e;
+    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
+    background: #fff;
+}
+
+button {
+  font-family: 'Poppins', sans-serif;
+    padding: 14px;
+    width: 100%;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background: #c8102e;
+    color: #fff;
+}
+.btn-primary:hover {
+    background: #a30d24;
+}.btn-secondary:hover {
+    background: #bbb;
+}
+.btn-secondary {
+    background: #ccc;
+    color: #333;
+}
+
+.result {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #333;
+}
+
+    </style>
+</head>
+<body>
+   <nav>
+        <div class="logo-container">
+            <img src="/logo.png" alt="FadeMeBets Logo">
+            <span class="logo-text">FadeMeBets</span>
+        </div>
+         <div class="menu">
+  <a href="subscribe.html">Subscribe</a>
+  <a href="ev.html">+EV</a>
+  <a href="locks.html">Lock of the Day</a>
+  <a href="standings.html">Standings</a>
+
+  <div class="dropdown">
+    <button class="dropbtn">Calculators ▼</button>
+    <div class="dropdown-content">
+      <a href="odds.html">Odds</a>
+      <a href="ev-calculator.html">EV Calc</a>
+      <a href="parlay-calculator.html">Parlay Calc</a>
+    </div>
+  </div>
+
+  <a href="notifications.html">Profile</a>
+</div>
+    </nav>
+
+ <div class="main">
+
+
+    <div class="content">
+
+    <div class="card">
+        <h2>Parlay Calculator</h2>
+
+        <div class="info-row"><span>Expected Winnings:</span> <strong id="winnings">$0.00</strong></div>
+        <div class="info-row"><span>Expected Payout:</span> <strong id="payout">$0.00</strong></div>
+        <div class="info-row"><span>Parlay Odds:</span> <strong id="parlay-odds">–</strong></div>
+
+        <div class="input-group">
+            <label>Bet Amount ($)</label>
+            <input type="number" id="betAmount" placeholder="e.g. 10" value="10">
+        </div>
+
+        <div id="legs-container"></div>
+
+        <button class="btn-primary" onclick="addLeg()">+ Add Parlay Leg</button>
+        <button class="btn-secondary" onclick="resetParlay()">Reset Parlay</button>
+<button class="btn-primary" onclick="calculateParlay()">Generate Odds</button>
+
+        <div class="result">
+            Only American Odds Supported (e.g. -110, +150)
+        </div>
+
+    </div>
+</div></div>
+    <script>
+        let legCount = 0;
+
+        function addLeg() {
+            legCount++;
+            const container = document.getElementById('legs-container');
+
+            const div = document.createElement('div');
+            div.className = 'parlay-leg';
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.placeholder = `Parlay Leg ${legCount} (e.g. -110)`;
+            input.className = 'leg';
+
+            div.appendChild(input);
+            container.appendChild(div);
+        }
+
+        function convertToDecimal(odds) {
+            return odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
+        }
+
+        function calculateParlay() {
+    const legs = document.querySelectorAll('.leg');
+    let totalDecimalOdds = 1;
+    let validLegs = 0;
+
+    legs.forEach(input => {
+        const odds = parseFloat(input.value);
+        if (!isNaN(odds)) {
+            totalDecimalOdds *= convertToDecimal(odds);
+            validLegs++;
+        }
+    });
+
+    if (validLegs === 0) {
+        alert('Please enter at least one valid odds leg.');
+        return;
+    }
+
+    // Display total parlay odds
+    document.getElementById('parlay-odds').innerText = totalDecimalOdds.toFixed(4);
+
+    const wager = parseFloat(document.getElementById('betAmount').value);
+    if (!isNaN(wager) && wager > 0) {
+        const expectedPayout = (totalDecimalOdds * wager).toFixed(2);
+        const winnings = (expectedPayout - wager).toFixed(2);
+        document.getElementById('payout').innerText = `$${expectedPayout}`;
+        document.getElementById('winnings').innerText = `$${winnings}`;
+    } else {
+        document.getElementById('payout').innerText = '$0.00';
+        document.getElementById('winnings').innerText = '$0.00';
+    }
+}
+
+        function resetParlay() {
+            document.getElementById('legs-container').innerHTML = '';
+            legCount = 0;
+            document.getElementById('betAmount').value = '10';
+            document.getElementById('parlay-odds').innerText = '–';
+            document.getElementById('payout').innerText = '$0.00';
+            document.getElementById('winnings').innerText = '$0.00';
+        }
+
+        // Initialize with 2 legs
+        addLeg();
+        addLeg();
+    </script>
+
+</body>
+</html>
