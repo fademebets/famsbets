@@ -54,10 +54,7 @@
       padding: 5px 0;
     }
 
-    /* Show dropdown on hover */
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
+   
 
     /* Dropdown links style */
     .dropdown-content a {
@@ -369,7 +366,7 @@
       <a href="standings.html">Standings</a>
 
       <div class="dropdown">
-        <button class="dropbtn">Calculators ▼</button>
+        <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
         <div class="dropdown-content">
           <a href="odds.html">Odds</a>
           <a href="ev-calculator.html">EV Calc</a>
@@ -430,6 +427,23 @@
   </div>
 
   <script>
+  function toggleDropdown() {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+  }
+
+  // Close dropdown if clicking outside
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
     function checkSubscription() {
       // Note: localStorage is not available in Claude artifacts
       // In a real environment, this would work with localStorage

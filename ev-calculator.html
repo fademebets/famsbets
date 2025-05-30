@@ -109,11 +109,6 @@
             right: 0;
         }
 
-        .dropdown:hover .dropdown-content {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -535,7 +530,7 @@
             <a href="standings.html">Standings</a>
 
             <div class="dropdown">
-                <button class="dropbtn">Calculators ▼</button>
+                <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
                 <div class="dropdown-content">
                     <a href="odds.html">Odds</a>
                     <a href="ev-calculator.html">EV Calc</a>
@@ -633,6 +628,24 @@
     </div>
 
     <script>
+
+      function toggleDropdown() {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+  }
+
+  // Close dropdown if clicking outside
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
         function calculateEV() {
             const calculateBtn = document.getElementById('calculateBtn');
             calculateBtn.classList.add('calculating');
