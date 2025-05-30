@@ -90,7 +90,7 @@
   <script>
 
      function notifySubscribers() {
-    fetch('https://fademebets.onrender.com/api/admin/notify-lock-update', {
+    fetch('https://famsbets.onrender.com/api/admin/notify-lock-update', {
       method: 'POST'
     })
     .then(res => res.json())
@@ -118,7 +118,7 @@
     if (!token) {
       window.location.href = 'adminlogin.html';
     } else {
-      fetch('https://fademebets.onrender.com/api/admin/profile', {
+      fetch('https://famsbets.onrender.com/api/admin/profile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -153,7 +153,7 @@
   const oldPassword = document.getElementById('oldPassword').value;
   const newPassword = document.getElementById('newPassword').value;
 
-  fetch('https://fademebets.onrender.com/api/admin/change-password', {
+  fetch('https://famsbets.onrender.com/api/admin/change-password', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

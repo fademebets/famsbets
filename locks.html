@@ -526,7 +526,7 @@
       }
 
       try {
-        const response = await fetch('https://fademebets.onrender.com/api/auth/subscription-status', {
+        const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -566,7 +566,7 @@
         // Show loading state
         lockContainer.innerHTML = '<div class="loading">Loading daily locks...</div>';
 
-        const response = await fetch('https://fademebets.onrender.com/api/lock/today', {
+        const response = await fetch('https://famsbets.onrender.com/api/lock/today', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

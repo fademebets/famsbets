@@ -170,7 +170,7 @@
   <script>
 
      function notifySubscribers() {
-    fetch('https://fademebets.onrender.com/api/admin/notify-lock-update', {
+    fetch('https://famsbets.onrender.com/api/admin/notify-lock-update', {
       method: 'POST'
     })
     .then(res => res.json())
@@ -198,7 +198,7 @@
     if (!token) {
       window.location.href = 'adminlogin.html';
     } else {
-      fetch('https://fademebets.onrender.com/api/admin/profile', {
+      fetch('https://famsbets.onrender.com/api/admin/profile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -292,7 +292,7 @@
         await new Promise(resolve => setTimeout(resolve, 1500));
 
 
-        const response = await fetch('https://fademebets.onrender.com/api/lock/create', {
+        const response = await fetch('https://famsbets.onrender.com/api/lock/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -335,7 +335,7 @@
         await new Promise(resolve => setTimeout(resolve, 1500));
 
 
-        const response = await fetch('https://fademebets.onrender.com/api/ev/create', {
+        const response = await fetch('https://famsbets.onrender.com/api/ev/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

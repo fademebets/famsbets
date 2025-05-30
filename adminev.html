@@ -117,7 +117,7 @@
     if (!token) {
       window.location.href = 'adminlogin.html';
     } else {
-      fetch('https://fademebets.onrender.com/api/admin/profile', {
+      fetch('https://famsbets.onrender.com/api/admin/profile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -187,7 +187,7 @@ function formatDate(dateStr) {
 // Fetch and display EVs in table
 function loadEVs() {
   const token = localStorage.getItem('adminToken');
-  fetch('https://fademebets.onrender.com/api/ev/all', {
+  fetch('https://famsbets.onrender.com/api/ev/all', {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -240,7 +240,7 @@ function loadEVs() {
 // Delete EV function
 function deleteEV(evId) {
   const token = localStorage.getItem('adminToken');
-  fetch(`https://fademebets.onrender.com/api/ev/delete/${evId}`, {
+  fetch(`https://famsbets.onrender.com/api/ev/delete/${evId}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`
