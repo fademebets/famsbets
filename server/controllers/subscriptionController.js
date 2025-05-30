@@ -75,8 +75,8 @@ exports.createCheckoutSession = async (req, res) => {
       payment_method_types: ['card'],
       line_items: [{ price_data: priceData, quantity: 1 }],
       mode: 'subscription',
-      success_url: 'http://127.0.0.1:5500/',
-      cancel_url: 'http://127.0.0.1:5500/subscribe.html',
+      success_url: 'https://www.fademebets.com/',
+      cancel_url: 'https://www.fademebets.com/subscribe.html',
     });
 
     res.json({ id: session.id });
