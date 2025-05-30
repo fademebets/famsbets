@@ -21,7 +21,7 @@ connectDB(); // Connect to DB when server starts
 
 app.use(express.json());
 app.use(cors({
-  origin: ['https://fademebets.com', 'https://www.fademebets.com', 'http://127.0.0.1:5500'],
+  origin: ['https://fademebets.com', 'http://127.0.0.1:5500'],
   credentials: true,
 }));
 
