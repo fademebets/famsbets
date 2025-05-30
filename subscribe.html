@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FadeMeBets - Subscribe</title>
   <link rel="icon" href="/logo.png"/>
-  <link rel="stylesheet" href="styles.css"/>
+     <link rel="stylesheet" href="styles.css"/>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
   <script src="https://js.stripe.com/v3/"></script>
   <style>
-    /* General resets and font */
+        /* General resets and font */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -136,6 +137,18 @@
       color: white;
     }
 
+     .dropdown-content.show {
+    display: block;
+  }
+
+  .mobile-dropdown-content {
+    display: none;
+  }
+
+  .mobile-dropdown-content.show {
+    display: block;
+  }
+
     /* Mobile Menu Toggle */
     .sidebar-toggle {
       display: none;
@@ -163,7 +176,7 @@
       background: linear-gradient(180deg, #1c2a39 0%, #2d3e50 100%);
       padding: 1rem;
       transform: translateX(-100%);
-      z-index: 1000;
+      z-index: 1001;
       overflow-y: auto;
       transition: transform 0.3s ease;
       display: none;
@@ -250,12 +263,43 @@
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
-      z-index: 999;
+      z-index: 1000;
     }
 
     .sidebar-overlay.show {
       display: block;
     }
+    .email-subscribe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.email-subscribe label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.email-subscribe input {
+  padding: 0.75rem 1rem;
+  width: 100%;
+  max-width: 350px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s border, 0.3s box-shadow;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.email-subscribe input:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+}
+
 
     /* Main Content */
     .main {
@@ -706,8 +750,8 @@
 
   </style>
 </head>
-
 <body>
+
   <nav>
     <div class="logo-container">
       <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
@@ -732,7 +776,6 @@
       </div>
 
       <a href="notifications.html">Profile</a>
-      <a href="/login.html">Login</a>
     </div>
   </nav>
 
@@ -765,93 +808,66 @@
           </li>
 
           <li><a href="notifications.html">Profile</a></li>
-          <li><a href="/login.html">Login</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="content">
-      <h1>Choose Your Subscription Plan</h1>
-      <p>Get access to exclusive picks, tools, and notifications to maximize your betting success.</p>
+  <div class="content">
+    <h1>Choose Your Subscription Plan</h1>
+    <p>Get exclusive picks, tools & real-time notifications.</p>
 
-      <div class="subscription-plans">
-        <div class="plan-card">
-          <h3>Monthly Plan</h3>
-          <div class="price">$2.99/mo</div>
-          <ul class="features">
-            <li>Daily Lock Picks</li>
-            <li>+EV Betting Opportunities</li>
-            <li>Real-time Odds Updates</li>
-            <li>Basic Notifications</li>
-          </ul>
-          <button class="subscribe-button" data-plan="monthly">Subscribe Now</button>
-        </div>
+    <!-- Add email input here -->
+    <div class="email-subscribe">
+  <label for="email">Enter your email to subscribe:</label>
+  <input type="email" id="email" placeholder="your.email@example.com" required />
+</div>
 
-        <div class="plan-card">
-          <h3>Quarterly Plan</h3>
-          <div class="price">$7.99/qtr</div>
-          <ul class="features">
-            <li>Everything in Monthly Plan</li>
-            <li>Priority Access to Picks</li>
-            <li>Advanced Analytics</li>
-            <li>Premium Notifications</li>
-            <li>Save 10%</li>
-          </ul>
-          <button class="subscribe-button" data-plan="quarterly">Subscribe Now</button>
-        </div>
 
-        <div class="plan-card">
-          <h3>Yearly Plan</h3>
-          <div class="price">$29.99/yr</div>
-          <ul class="features">
-            <li>Everything in Quarterly Plan</li>
-            <li>Early Access to New Features</li>
-            <li>Exclusive Bonuses</li>
-            <li>Save 17%</li>
-          </ul>
-          <button class="subscribe-button" data-plan="yearly">Subscribe Now</button>
-        </div>
+    <div class="subscription-plans">
+      <div class="plan-card">
+        <h3>Monthly Plan</h3>
+        <div class="price">$2.99/mo</div>
+        <ul class="features">
+          <li>Daily Lock Picks</li>
+          <li>+EV Betting Tips</li>
+          <li>Real-time Odds</li>
+          <li>Basic Notifications</li>
+        </ul>
+        <button class="subscribe-button" data-plan="monthly">Subscribe Now</button>
+      </div>
+
+      <div class="plan-card">
+        <h3>Quarterly Plan</h3>
+        <div class="price">$7.99/qtr</div>
+        <ul class="features">
+          <li>Everything in Monthly</li>
+          <li>Priority Picks</li>
+          <li>Advanced Analytics</li>
+          <li>Premium Notifications</li>
+          <li>Save 10%</li>
+        </ul>
+        <button class="subscribe-button" data-plan="quarterly">Subscribe Now</button>
+      </div>
+
+      <div class="plan-card">
+        <h3>Yearly Plan</h3>
+        <div class="price">$29.99/yr</div>
+        <ul class="features">
+          <li>Everything in Quarterly</li>
+          <li>Early New Features</li>
+          <li>Exclusive Bonuses</li>
+          <li>Save 17%</li>
+        </ul>
+        <button class="subscribe-button" data-plan="yearly">Subscribe Now</button>
       </div>
     </div>
   </div>
+  </div>
 
   <script>
+    const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
 
-    function toggleDropdown() {
-    const dropdownContent = document.querySelector('.dropdown-content');
-    dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
-  }
-
-  // Close dropdown if clicking outside
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      for (var i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-    }
-  }
-    // Check subscription status from localStorage
-    function checkSubscription() {
-      const subscriptionStatus = localStorage.getItem('subscriptionStatus');
-      console.log('Subscription status is:', subscriptionStatus);
-
-      // Redirect if subscriptionStatus IS 'active'
-      if (subscriptionStatus && subscriptionStatus.toLowerCase() === 'active') {
-        console.log('Subscription active, redirecting user.');
-        window.location.href = 'notifications.html'; // or the page you want to redirect to
-      } else {
-        console.log('Subscription not active, user stays on this page.');
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      checkSubscription();
-    });
-
+    // Sidebar functionality
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
@@ -868,33 +884,50 @@
       overlay.classList.remove('show');
     }
 
-    function toggleMobileDropdown() {
-      const dropdownContent = document.getElementById('mobileDropdownContent');
-      dropdownContent.classList.toggle('show');
-    }
-
-    // Close sidebar when clicking on a link (mobile)
-    document.querySelectorAll('.mobile-nav a').forEach(link => {
-      link.addEventListener('click', closeSidebar);
-    });
-
-    // Close sidebar when window is resized to desktop size
+    // Close sidebar when window is resized to desktop view
     window.addEventListener('resize', function() {
       if (window.innerWidth > 768) {
         closeSidebar();
       }
     });
 
-    const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+    // Toggle desktop dropdown
+    function toggleDropdown() {
+      const dropdownContent = document.querySelector('.dropdown-content');
+      dropdownContent.classList.toggle('show');
+    }
 
+    // Toggle mobile dropdown
+    function toggleMobileDropdown() {
+      const mobileDropdownContent = document.getElementById('mobileDropdownContent');
+      mobileDropdownContent.classList.toggle('show');
+    }
+
+    // Close dropdowns when clicking outside
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn') && !event.target.matches('.mobile-dropdown-btn')) {
+        // Close desktop dropdown
+        const dropdowns = document.getElementsByClassName("dropdown-content");
+        for (let i = 0; i < dropdowns.length; i++) {
+          dropdowns[i].classList.remove('show');
+        }
+
+        // Close mobile dropdown
+        const mobileDropdowns = document.getElementsByClassName("mobile-dropdown-content");
+        for (let i = 0; i < mobileDropdowns.length; i++) {
+          mobileDropdowns[i].classList.remove('show');
+        }
+      }
+    }
+
+    // Stripe subscription functionality
     document.querySelectorAll('.subscribe-button').forEach(button => {
       button.addEventListener('click', async (e) => {
         const plan = e.target.dataset.plan;
+        const email = document.getElementById('email').value.trim();
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-          alert('You must log in first to subscribe.');
-          window.location.href = 'login.html';
+        if (!email) {
+          alert('Please enter your email to subscribe.');
           return;
         }
 
@@ -903,9 +936,8 @@
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + token
             },
-            body: JSON.stringify({ plan })
+            body: JSON.stringify({ plan, email }) // send email to backend
           });
 
           if (!response.ok) {
@@ -928,5 +960,6 @@
       });
     });
   </script>
+
 </body>
 </html>

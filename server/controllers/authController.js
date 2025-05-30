@@ -83,15 +83,16 @@ exports.resetPassword = async (req, res) => {
 
 
 exports.changePassword = async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-  const userId = req.userId; // Now this is correctly attached by middleware
+  const { newPassword } = req.body;
+  const userId = req.userId; // set via your authMiddleware
+
+  if (!newPassword) {
+    return res.status(400).json({ message: 'New password is required' });
+  }
 
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
 
     user.password = await bcrypt.hash(newPassword, 12);
     await user.save();
@@ -101,6 +102,7 @@ exports.changePassword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 

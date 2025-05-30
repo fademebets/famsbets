@@ -3,6 +3,6 @@ const router = express.Router();
 const subscriptionController = require('../controllers/subscriptionController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-router.post('/create-checkout-session', authMiddleware, subscriptionController.createCheckoutSession);
+router.post('/create-checkout-session', subscriptionController.createCheckoutSession);
 
 module.exports = router;

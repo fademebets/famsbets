@@ -652,24 +652,22 @@
   <h1>Change Password</h1>
   <p>Update your password to keep your account secure.</p>
 
-  <form id="change-password-form" onsubmit="handleChangePassword(event)">
-    <div class="form-group">
-      <label for="current-password">Current Password</label>
-      <input type="password" id="current-password" name="currentPassword" required />
-    </div>
+ <form id="change-password-form" onsubmit="handleChangePassword(event)">
+  <div class="form-group">
+    <label for="new-password">New Password</label>
+    <input type="password" id="new-password" name="newPassword" required />
+  </div>
 
-    <div class="form-group">
-      <label for="new-password">New Password</label>
-      <input type="password" id="new-password" name="newPassword" required />
-    </div>
+  <div class="form-group">
+    <label for="confirm-password">Confirm New Password</label>
+    <input type="password" id="confirm-password" name="confirmPassword" required />
+  </div>
 
-    <div class="form-group">
-      <label for="confirm-password">Confirm New Password</label>
-      <input type="password" id="confirm-password" name="confirmPassword" required />
-    </div>
+  <button type="submit" class="save-button">Change Password</button>
+</form>
 
-    <button type="submit" class="save-button">Change Password</button>
-  </form>
+
+
 
   <div id="change-password-status" class="notification-status"></div>
 </div>
@@ -731,7 +729,6 @@ async function handleChangePassword(event) {
   statusDiv.textContent = "";
   statusDiv.classList.remove("error", "success");
 
-  const currentPassword = event.target.currentPassword.value.trim();
   const newPassword = event.target.newPassword.value.trim();
   const confirmPassword = event.target.confirmPassword.value.trim();
 
@@ -753,7 +750,6 @@ async function handleChangePassword(event) {
   statusDiv.classList.remove("error", "success");
   statusDiv.style.display = "block";
 
-  // Get token from localStorage
   const token = localStorage.getItem('token');
 
   try {
@@ -761,12 +757,9 @@ async function handleChangePassword(event) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,  // Add Bearer token here
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        currentPassword,
-        newPassword
-      }),
+      body: JSON.stringify({ newPassword }),
     });
 
     const data = await response.json();
@@ -788,6 +781,7 @@ async function handleChangePassword(event) {
     console.error('Error:', error);
   }
 }
+
 
 // Handle both desktop and mobile logout buttons
 function handleLogout(e) {

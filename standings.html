@@ -52,7 +52,6 @@
       padding: 5px 0;
     }
 
-
     /* Dropdown links style */
     .dropdown-content a {
       color: white;
@@ -129,7 +128,7 @@
       padding: 2rem 1rem;
       flex-shrink: 0;
       transition: transform 0.3s ease;
-      display: none; /* Hide sidebar in desktop view */
+      display: none;
     }
 
     .sidebar h3 {
@@ -157,7 +156,6 @@
       background-color: #2d3e50;
     }
 
-    /* Mobile sidebar navigation */
     .mobile-nav {
       display: none;
     }
@@ -186,7 +184,6 @@
       background-color: #2d3e50;
     }
 
-    /* Mobile dropdown in sidebar */
     .mobile-dropdown {
       margin-bottom: 0.5rem;
     }
@@ -231,7 +228,6 @@
       background-color: #2d3e50;
     }
 
-    /* Main standings content */
     .main-standing {
       flex: 1;
       padding: 2rem;
@@ -249,7 +245,6 @@
       font-weight: 700;
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       justify-content: center;
@@ -284,7 +279,6 @@
       box-shadow: 0 4px 8px rgba(200, 16, 46, 0.3);
     }
 
-    /* Tab content */
     .tab-content {
       display: none;
       animation: fadeIn 0.3s ease-in;
@@ -299,7 +293,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Table styling */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -344,7 +337,6 @@
       color: #333;
     }
 
-    /* Team logo and name */
     .team-logo {
       width: 24px;
       height: 24px;
@@ -360,7 +352,6 @@
       align-items: center;
     }
 
-    /* Record styling */
     .record-positive {
       color: #27ae60;
       font-weight: 600;
@@ -371,31 +362,6 @@
       font-weight: 600;
     }
 
-    /* Streak styling */
-    .streak {
-      display: flex;
-      gap: 2px;
-    }
-
-    .streak-w {
-      background-color: #27ae60;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .streak-l {
-      background-color: #e74c3c;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* Overlay for mobile sidebar */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -405,6 +371,29 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 999;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      font-size: 1.1rem;
+      color: #666;
+    }
+
+    .error {
+      background-color: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .win-percentage {
+      font-size: 12px;
+      color: #666;
+      font-weight: normal;
     }
 
     /* Responsive Layout */
@@ -428,7 +417,7 @@
         transform: translateX(-100%);
         z-index: 1000;
         overflow-y: auto;
-        display: block; /* Show sidebar in mobile view */
+        display: block;
       }
 
       .sidebar.open {
@@ -491,7 +480,6 @@
         flex-shrink: 0;
       }
 
-      /* Mobile table styling */
       table {
         font-size: 14px;
         border-radius: 8px;
@@ -513,14 +501,12 @@
         margin-right: 6px;
       }
 
-      /* Mobile-friendly table layout */
       td:first-child {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
       }
 
-      /* Stack team info vertically on very small screens */
       @media (max-width: 480px) {
         table {
           display: block;
@@ -582,24 +568,6 @@
         }
       }
     }
-
-    /* Loading and error states */
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      font-size: 1.1rem;
-      color: #666;
-    }
-
-    .error {
-      background-color: #fee;
-      border: 1px solid #fcc;
-      color: #c33;
-      padding: 1rem;
-      border-radius: 6px;
-      text-align: center;
-      margin: 1rem 0;
-    }
   </style>
 </head>
 <body>
@@ -618,7 +586,7 @@
       <a href="standings.html">Standings</a>
 
       <div class="dropdown">
-        <button onclick="toggleDropdown()"class="dropbtn">Calculators ▼</button>
+        <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
         <div class="dropdown-content">
           <a href="odds.html">Odds</a>
           <a href="ev-calculator.html">EV Calc</a>
@@ -630,15 +598,12 @@
     </div>
   </nav>
 
-  <!-- Sidebar overlay for mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <div class="main">
-    <!-- Sidebar with mobile navigation -->
     <div class="sidebar" id="sidebar">
       <h3>FadeMeBets</h3>
 
-      <!-- Mobile Navigation Menu -->
       <div class="mobile-nav">
         <ul>
           <li><a href="subscribe.html">Subscribe</a></li>
@@ -646,7 +611,6 @@
           <li><a href="locks.html">Lock of the Day</a></li>
           <li><a href="standings.html">Standings</a></li>
 
-          <!-- Mobile dropdown for calculators -->
           <li class="mobile-dropdown">
             <button class="mobile-dropdown-btn" onclick="toggleMobileDropdown()">
               Calculators ▼
@@ -671,266 +635,157 @@
         <button class="tab-btn" onclick="switchTab('ncaaf')">NCAAF</button>
         <button class="tab-btn" onclick="switchTab('ncaab')">NCAAB</button>
         <button class="tab-btn" onclick="switchTab('mlb')">MLB</button>
-        <button class="tab-btn" onclick="switchTab('ufc')">UFC</button>
+        <button class="tab-btn" onclick="switchTab('nhl')">NHL</button>
       </div>
 
       <div id="nfl" class="tab-content active">
-        <table>
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>ATS Record</th>
-              <th>Recent Form</th>
-              <th>Point Diff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Chiefs" />
-                Kansas City Chiefs
-              </td>
-              <td data-label="ATS Record" class="record-positive">12-5</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+6.3</td>
-            </tr>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Bills" />
-                Buffalo Bills
-              </td>
-              <td data-label="ATS Record" class="record-positive">11-6</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+4.8</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loading">Loading NFL standings...</div>
       </div>
 
       <div id="nba" class="tab-content">
-        <table>
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>ATS Record</th>
-              <th>Recent Form</th>
-              <th>Point Diff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Lakers" />
-                Los Angeles Lakers
-              </td>
-              <td data-label="ATS Record" class="record-positive">43-39</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+3.1</td>
-            </tr>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Celtics" />
-                Boston Celtics
-              </td>
-              <td data-label="ATS Record" class="record-positive">45-37</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+5.2</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loading">Loading NBA standings...</div>
       </div>
 
       <div id="ncaaf" class="tab-content">
-        <table>
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>ATS Record</th>
-              <th>Recent Form</th>
-              <th>Point Diff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Georgia" />
-                Georgia Bulldogs
-              </td>
-              <td data-label="ATS Record" class="record-positive">13-1</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+14.2</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loading">Loading NCAAF standings...</div>
       </div>
 
       <div id="ncaab" class="tab-content">
-        <table>
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>ATS Record</th>
-              <th>Recent Form</th>
-              <th>Point Diff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Kansas" />
-                Kansas Jayhawks
-              </td>
-              <td data-label="ATS Record" class="record-positive">25-6</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+10.5</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loading">Loading NCAAB standings...</div>
       </div>
 
       <div id="mlb" class="tab-content">
-        <table>
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>ATS Record</th>
-              <th>Recent Form</th>
-              <th>Point Diff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Team">
-                <img class="team-logo" src="logo.png" alt="Yankees" />
-                New York Yankees
-              </td>
-              <td data-label="ATS Record" class="record-positive">88-74</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-l">L</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-              <td data-label="Point Diff" class="record-positive">+2.7</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loading">Loading MLB standings...</div>
       </div>
 
-      <div id="ufc" class="tab-content">
-        <table>
-          <thead>
-            <tr>
-              <th>Fighter</th>
-              <th>Record</th>
-              <th>Recent Form</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Fighter">
-                <img class="team-logo" src="logo.png" alt="Jon Jones" />
-                Jon Jones
-              </td>
-              <td data-label="Record" class="record-positive">27-1</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td data-label="Fighter">
-                <img class="team-logo" src="logo.png" alt="Islam Makhachev" />
-                Islam Makhachev
-              </td>
-              <td data-label="Record" class="record-positive">25-1</td>
-              <td data-label="Recent Form">
-                <div class="streak">
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                  <span class="streak-w">W</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div id="nhl" class="tab-content">
+        <div class="loading">Loading NHL standings...</div>
       </div>
     </div>
   </div>
 
   <script>
+    // API endpoints
+    const API_ENDPOINTS = {
+      nfl: 'https://fademebets.onrender.com/api/nfl-standings',
+      nba: 'https://fademebets.onrender.com/api/nba-standings',
+      ncaaf: 'https://fademebets.onrender.com/api/ncaaf-standings',
+      ncaab: 'https://fademebets.onrender.com/api/ncaam-standings',
+      mlb: 'https://fademebets.onrender.com/api/mlb-standings',
+      nhl: 'https://fademebets.onrender.com/api/nhl-standings'
+    };
 
-    function toggleDropdown() {
-    const dropdownContent = document.querySelector('.dropdown-content');
-    dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
-  }
+    // Store fetched data to avoid refetching
+    const standingsData = {};
 
-  // Close dropdown if clicking outside
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      for (var i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+    // Fetch data from API
+    async function fetchStandings(league) {
+      if (standingsData[league]) {
+        return standingsData[league];
+      }
+
+      try {
+        const response = await fetch(API_ENDPOINTS[league]);
+        const data = await response.json();
+
+        // Handle different response formats
+        let teams;
+        if (league === 'nba') {
+          teams = data; // NBA returns array directly
+        } else {
+          teams = data.teams || data; // Other leagues have teams property
         }
+
+        standingsData[league] = teams;
+        return teams;
+      } catch (error) {
+        console.error(`Error fetching ${league} standings:`, error);
+        throw error;
       }
     }
-  }
+
+    // Calculate win percentage
+    function calculateWinPercentage(wins, losses) {
+      const total = wins + losses;
+      if (total === 0) return 0;
+      return ((wins / total) * 100).toFixed(1);
+    }
+
+    // Create table HTML
+    function createStandingsTable(teams, league) {
+      const isUFC = league === 'ufc';
+
+      let tableHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>${isUFC ? 'Fighter' : 'Team'}</th>
+              <th>Record</th>
+              <th>Win %</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      teams.forEach((team, index) => {
+        const wins = team.wins || 0;
+        const losses = team.losses || 0;
+        const winPercentage = calculateWinPercentage(wins, losses);
+        const recordClass = wins > losses ? 'record-positive' : 'record-negative';
+
+        tableHTML += `
+          <tr>
+            <td data-label="${isUFC ? 'Fighter' : 'Team'}">
+              <img class="team-logo" src="${team.logo || '/logo.png'}" alt="${team.name || team.team}"
+                   onerror="this.src='/logo.png'" />
+              ${team.name || team.team}
+            </td>
+            <td data-label="Record" class="${recordClass}">
+              ${wins}-${losses}
+            </td>
+            <td data-label="Win %" class="win-percentage">
+              ${winPercentage}%
+            </td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `
+          </tbody>
+        </table>
+      `;
+
+      return tableHTML;
+    }
+
+    // Load standings for a specific league
+    async function loadStandings(league) {
+      const tabContent = document.getElementById(league);
+
+      try {
+        tabContent.innerHTML = '<div class="loading">Loading ' + league.toUpperCase() + ' standings...</div>';
+
+        const teams = await fetchStandings(league);
+
+        if (teams && teams.length > 0) {
+          // Sort teams by win percentage (descending)
+          const sortedTeams = teams.sort((a, b) => {
+            const aWinPct = calculateWinPercentage(a.wins || 0, a.losses || 0);
+            const bWinPct = calculateWinPercentage(b.wins || 0, b.losses || 0);
+            return bWinPct - aWinPct;
+          });
+
+          tabContent.innerHTML = createStandingsTable(sortedTeams, league);
+        } else {
+          tabContent.innerHTML = '<div class="error">No standings data available for ' + league.toUpperCase() + '</div>';
+        }
+      } catch (error) {
+        console.error(`Error loading ${league} standings:`, error);
+        tabContent.innerHTML = '<div class="error">Failed to load ' + league.toUpperCase() + ' standings. Please try again later.</div>';
+      }
+    }
+
+    // Switch between tabs
     function switchTab(tabId) {
       // Remove active class from all content and buttons
       const contents = document.querySelectorAll('.tab-content');
@@ -942,12 +797,22 @@
       // Add active class to selected content and button
       document.getElementById(tabId).classList.add('active');
       event.target.classList.add('active');
+
+      // Load standings for the selected tab if not already loaded
+      if (!standingsData[tabId]) {
+        loadStandings(tabId);
+      }
+    }
+
+    // Navigation functions
+    function toggleDropdown() {
+      const dropdownContent = document.querySelector('.dropdown-content');
+      dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
     }
 
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-
       sidebar.classList.toggle('open');
       overlay.classList.toggle('show');
     }
@@ -955,7 +820,6 @@
     function closeSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-
       sidebar.classList.remove('open');
       overlay.classList.remove('show');
     }
@@ -965,8 +829,25 @@
       dropdownContent.classList.toggle('show');
     }
 
-    // Close sidebar when clicking on a link (mobile)
+    // Close dropdown if clicking outside
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        const dropdowns = document.getElementsByClassName("dropdown-content");
+        for (let i = 0; i < dropdowns.length; i++) {
+          const openDropdown = dropdowns[i];
+          if (openDropdown.style.display === 'block') {
+            openDropdown.style.display = 'none';
+          }
+        }
+      }
+    }
+
+    // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
+      // Load NFL standings by default (active tab)
+      loadStandings('nfl');
+
+      // Close sidebar when clicking on mobile nav links
       document.querySelectorAll('.mobile-nav a').forEach(link => {
         link.addEventListener('click', closeSidebar);
       });

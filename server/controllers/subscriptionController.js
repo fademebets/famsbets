@@ -4,11 +4,18 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 exports.createCheckoutSession = async (req, res) => {
   try {
-    const user = req.user;
-    const { plan } = req.body;
+    const { email, plan } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required.' });
+    }
+
+    // Find user by email or create if doesn't exist
+    let user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+      user = new User({ email });
+      await user.save();
     }
 
     // Check if user has a valid Stripe customer, if not create one
@@ -18,18 +25,16 @@ exports.createCheckoutSession = async (req, res) => {
       try {
         await stripe.customers.retrieve(stripeCustomerId);
       } catch (err) {
-        // If customer not found in Stripe, create a new one
         if (err.code === 'resource_missing') {
           const newCustomer = await stripe.customers.create({ email: user.email });
           stripeCustomerId = newCustomer.id;
           user.stripeCustomerId = newCustomer.id;
           await user.save();
         } else {
-          throw err; // rethrow other unexpected errors
+          throw err;
         }
       }
     } else {
-      // No customer ID, create one
       const newCustomer = await stripe.customers.create({ email: user.email });
       stripeCustomerId = newCustomer.id;
       user.stripeCustomerId = newCustomer.id;
@@ -75,11 +80,8 @@ exports.createCheckoutSession = async (req, res) => {
     });
 
     res.json({ id: session.id });
-
-
   } catch (error) {
     console.error('Stripe session error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-

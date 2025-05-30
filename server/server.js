@@ -7,6 +7,8 @@ const scrapeRoutes = require('./routes/scrapeRoutes');
 const adminRoutes = require('./routes/adminAuthRoutes');
 const evRoutes = require('./routes/evRoutes');
 const lockRoutes = require('./routes/lockRoutes');
+const standingsRoutes = require("./routes/standingsRoutes");
+
 
 const stripeWebhookRoute = require('./routes/stripeWebhook');
 
@@ -19,7 +21,7 @@ connectDB(); // Connect to DB when server starts
 
 app.use(express.json());
 app.use(cors({
-  origin: ['https://fademebets.com', 'http://localhost:3000'],
+  origin: ['https://fademebets.com', 'http://127.0.0.1:5500'],
   credentials: true,
 }));
 
@@ -40,6 +42,9 @@ app.use('/api/ev', evRoutes);
 
 app.use('/api/lock', lockRoutes);
 app.use('/api', scrapeRoutes);
+
+
+app.use("/api", standingsRoutes);
 
 
 const PORT = process.env.PORT || 5000;
