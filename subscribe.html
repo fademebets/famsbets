@@ -865,133 +865,139 @@
   </div>
 
   <script>
+  const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
 
-    // Check subscription status on page load
-document.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem('token');
+  // Check subscription status on page load
+  document.addEventListener("DOMContentLoaded", async () => {
+    const currentPage = window.location.pathname.split('/').pop();
 
-  if (!token) {
-    window.location.href = "subscribe.html";
-    return;
-  }
+    // Prevent redirect loops on subscribe.html or notification.html
+    if (currentPage === 'subscribe.html' || currentPage === 'notification.html') {
+      return;  // Skip subscription check on these pages
+    }
 
-  try {
-    const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = "subscribe.html";
+      return;
+    }
+
+    try {
+      const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.subscriptionStatus === 'active') {
+        // Redirect to notification page if subscription is active
+        window.location.href = "notification.html";
+      } else {
+        window.location.href = "subscribe.html";
       }
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.subscriptionStatus === 'active') {
-      // Redirect to notification page if subscription is active
-      window.location.href = "notification.html";
-    } else {
+    } catch (error) {
+      console.error("Failed to check subscription status:", error);
       window.location.href = "subscribe.html";
     }
-  } catch (error) {
-    console.error("Failed to check subscription status:", error);
-    window.location.href = "subscribe.html";
+  });
+
+  // Sidebar functionality
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
   }
-});
 
-    const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
-    // Sidebar functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
 
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('show');
+  // Close sidebar when window is resized to desktop view
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+      closeSidebar();
     }
+  });
 
-    function closeSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+  // Toggle desktop dropdown
+  function toggleDropdown() {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    dropdownContent.classList.toggle('show');
+  }
 
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-    }
+  // Toggle mobile dropdown
+  function toggleMobileDropdown() {
+    const mobileDropdownContent = document.getElementById('mobileDropdownContent');
+    mobileDropdownContent.classList.toggle('show');
+  }
 
-    // Close sidebar when window is resized to desktop view
-    window.addEventListener('resize', function() {
-      if (window.innerWidth > 768) {
-        closeSidebar();
+  // Close dropdowns when clicking outside
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn') && !event.target.matches('.mobile-dropdown-btn')) {
+      // Close desktop dropdown
+      const dropdowns = document.getElementsByClassName("dropdown-content");
+      for (let i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].classList.remove('show');
       }
-    });
 
-    // Toggle desktop dropdown
-    function toggleDropdown() {
-      const dropdownContent = document.querySelector('.dropdown-content');
-      dropdownContent.classList.toggle('show');
-    }
-
-    // Toggle mobile dropdown
-    function toggleMobileDropdown() {
-      const mobileDropdownContent = document.getElementById('mobileDropdownContent');
-      mobileDropdownContent.classList.toggle('show');
-    }
-
-    // Close dropdowns when clicking outside
-    window.onclick = function(event) {
-      if (!event.target.matches('.dropbtn') && !event.target.matches('.mobile-dropdown-btn')) {
-        // Close desktop dropdown
-        const dropdowns = document.getElementsByClassName("dropdown-content");
-        for (let i = 0; i < dropdowns.length; i++) {
-          dropdowns[i].classList.remove('show');
-        }
-
-        // Close mobile dropdown
-        const mobileDropdowns = document.getElementsByClassName("mobile-dropdown-content");
-        for (let i = 0; i < mobileDropdowns.length; i++) {
-          mobileDropdowns[i].classList.remove('show');
-        }
+      // Close mobile dropdown
+      const mobileDropdowns = document.getElementsByClassName("mobile-dropdown-content");
+      for (let i = 0; i < mobileDropdowns.length; i++) {
+        mobileDropdowns[i].classList.remove('show');
       }
     }
+  }
 
-    // Stripe subscription functionality
-    document.querySelectorAll('.subscribe-button').forEach(button => {
-      button.addEventListener('click', async (e) => {
-        const plan = e.target.dataset.plan;
-        const email = document.getElementById('email').value.trim();
+  // Stripe subscription functionality
+  document.querySelectorAll('.subscribe-button').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const plan = e.target.dataset.plan;
+      const email = document.getElementById('email').value.trim();
 
-        if (!email) {
-          alert('Please enter your email to subscribe.');
+      if (!email) {
+        alert('Please enter your email to subscribe.');
+        return;
+      }
+
+      try {
+        const response = await fetch('https://famsbets.onrender.com/api/subscription/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ plan, email }) // send email to backend
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(errorData.message || 'Failed to create checkout session.');
           return;
         }
 
-        try {
-          const response = await fetch('https://famsbets.onrender.com/api/subscription/create-checkout-session', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ plan, email }) // send email to backend
-          });
+        const session = await response.json();
+        const result = await stripe.redirectToCheckout({ sessionId: session.id });
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            alert(errorData.message || 'Failed to create checkout session.');
-            return;
-          }
-
-          const session = await response.json();
-          const result = await stripe.redirectToCheckout({ sessionId: session.id });
-
-          if (result.error) {
-            alert(result.error.message);
-          }
-
-        } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
+        if (result.error) {
+          alert(result.error.message);
         }
-      });
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
