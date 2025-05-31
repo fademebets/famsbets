@@ -12,10 +12,14 @@ const standingsRoutes = require("./routes/standingsRoutes");
 
 const stripeWebhookRoute = require('./routes/stripeWebhook');
 
+const ConfirmSession = require('./routes/confirmsession');
+
 const app = express();  // <-- declare app BEFORE using it!
 
 // IMPORTANT: mount webhook route BEFORE express.json() or any other body parser
 app.use('/api/stripe', stripeWebhookRoute);
+
+app.use('/api/stripe', ConfirmSession);
 
 connectDB(); // Connect to DB when server starts
 
