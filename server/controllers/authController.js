@@ -105,16 +105,24 @@ exports.changePassword = async (req, res) => {
 
 
 
-
 exports.getSubscriptionStatus = async (req, res) => {
+  console.time('SubscriptionStatus API');
+
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Unauthorized: No token provided' });
 
   try {
+    console.time('JWT Verification');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.timeEnd('JWT Verification');
+
+    console.time('Mongo User Fetch');
     const user = await User.findById(decoded.userId);
+    console.timeEnd('Mongo User Fetch');
 
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    console.timeEnd('SubscriptionStatus API');
 
     res.json({
       subscriptionStatus: user.subscriptionStatus,
