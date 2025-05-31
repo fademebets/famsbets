@@ -109,7 +109,7 @@ const getMLBStandings = async (req, res) => {
 
 
 const getNCAAFTeamsData = async (req, res) => {
-    try {
+  try {
     const teamsResponse = await axios.get('https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams');
     const teamsData = teamsResponse.data.sports[0].leagues[0].teams;
 
@@ -124,31 +124,33 @@ const getNCAAFTeamsData = async (req, res) => {
       const team = teamObj.team;
       const teamStanding = standingsEntries.find(item => item.team.id === team.id);
 
-      if (teamStanding) {
-        console.log(`Stats for ${team.displayName}:`, teamStanding.stats);
-      }
-
       const wins = teamStanding
         ? getStatValue(teamStanding.stats, ['winsOverall', 'wins', 'winsTotal'])
-        : '0';
+        : 0;  // Changed '0' string to number 0 for sorting
 
       const losses = teamStanding
         ? getStatValue(teamStanding.stats, ['lossesOverall', 'losses', 'lossesTotal'])
-        : '0';
+        : 0;
 
       return {
         id: team.id,
         name: team.displayName,
         logo: team.logos[0]?.href || null,
-        wins,
-        losses,
+        wins: Number(wins),    // Ensure wins is a number
+        losses: Number(losses) // Ensure losses is a number
       };
     });
 
+    // Sort teams by wins descending
+    const sortedTeams = teams.sort((a, b) => b.wins - a.wins);
+
+    // Get top 25 teams only
+    const top25Teams = sortedTeams.slice(0, 25);
+
     res.status(200).json({
       success: true,
-      totalTeams: teams.length,
-      teams
+      totalTeams: top25Teams.length,
+      teams: top25Teams
     });
 
   } catch (error) {
