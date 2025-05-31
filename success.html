@@ -886,11 +886,14 @@
     </div>
 
     <script>
-        
-const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+  // Initialize Stripe with your public key
+  const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+
+  // Parse session_id from URL query parameters
   const urlParams = new URLSearchParams(window.location.search);
   const sessionId = urlParams.get('session_id');
 
+  // Function to confirm subscription by calling backend and store JWT token
   async function finalizeSubscription() {
     if (!sessionId) {
       alert('Invalid session.');
@@ -898,7 +901,7 @@ const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBa
     }
 
     try {
-      // Call your backend endpoint to confirm subscription and get JWT
+      // Call backend API to confirm the subscription session and get JWT
       const response = await fetch('https://famsbets.onrender.com/api/stripe/confirm-session', {
         method: 'POST',
         headers: {
@@ -914,12 +917,13 @@ const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBa
         return;
       }
 
+      // Extract JWT token from response
       const { token } = await response.json();
 
-      // Save JWT token in localStorage
+      // Save token to localStorage for authenticated requests
       localStorage.setItem('token', token);
 
-      // Optionally redirect to dashboard or reload
+      // Redirect user to notifications page or any other dashboard
       window.location.href = '/notifications.html';
     } catch (error) {
       console.error(error);
@@ -927,70 +931,67 @@ const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBa
     }
   }
 
+  // Immediately call finalizeSubscription on script load
   finalizeSubscription();
 
-        // Get session ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id');
-
-        if (sessionId) {
-            // You could verify the session with Stripe here if needed
-            console.log('Session ID:', sessionId);
-        }
-
-
+  // Dropdown toggle function for desktop
   function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
   }
 
-  // Close dropdown if clicking outside
+  // Close dropdown if clicking outside of dropdown button
   window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      for (var i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+      const dropdowns = document.getElementsByClassName("dropdown-content");
+      for (let i = 0; i < dropdowns.length; i++) {
+        const openDropdown = dropdowns[i];
+        if (openDropdown.style.display === 'block') {
+          openDropdown.style.display = 'none';
         }
       }
     }
   }
-    function checkSubscription() {
-      // Note: localStorage is not available in Claude artifacts
-      // In a real environment, this would work with localStorage
-      const prompt = document.querySelector('.subscription-prompt');
-      // Simulating subscription check - in real app, check localStorage here
-    }
 
-    window.onload = checkSubscription;
+  // Dummy function to check subscription (update with real logic as needed)
+  function checkSubscription() {
+    // For real use: check localStorage token or subscription status here
+    const prompt = document.querySelector('.subscription-prompt');
+    // Example: show or hide subscription prompt based on token presence
+  }
 
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+  // Call checkSubscription on window load
+  window.onload = checkSubscription;
 
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('show');
-    }
+  // Sidebar toggle for desktop and mobile
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
-    function closeSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
 
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-    }
+  // Close sidebar function
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
-    function toggleMobileDropdown() {
-      const dropdownContent = document.getElementById('mobileDropdownContent');
-      dropdownContent.classList.toggle('show');
-    }
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
 
-    // Close sidebar when clicking on a link (mobile)
-    document.querySelectorAll('.mobile-nav a').forEach(link => {
-      link.addEventListener('click', closeSidebar);
-    });
+  // Toggle dropdown for mobile menu
+  function toggleMobileDropdown() {
+    const dropdownContent = document.getElementById('mobileDropdownContent');
+    dropdownContent.classList.toggle('show');
+  }
 
-    </script>
+  // Close sidebar when clicking any mobile navigation link
+  document.querySelectorAll('.mobile-nav a').forEach(link => {
+    link.addEventListener('click', closeSidebar);
+  });
+</script>
+
 </body>
 </html>
