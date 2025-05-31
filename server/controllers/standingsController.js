@@ -20,6 +20,7 @@ function parseRecordSummary(stats) {
 }
 
 
+
 // Controller to fetch NBA standings and extract main details
 const getNBAStandings = async (req, res) => {
   try {
