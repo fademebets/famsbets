@@ -23,11 +23,12 @@ router.post('/confirm-session', async (req, res) => {
     }
 
     // Create JWT
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+   const token = jwt.sign(
+  { userId: user._id, email: user.email },  // 👈 changed `id` to `userId`
+  process.env.JWT_SECRET,
+  { expiresIn: '7d' }
+);
+
 
     res.json({ token });
   } catch (error) {
