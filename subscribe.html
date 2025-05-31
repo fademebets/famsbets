@@ -868,45 +868,30 @@
 
 </body>
 <script>
-  const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
-
-  // Check subscription status on page load
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname.split('/').pop();
-
-    // Prevent redirect loops on subscribe.html or notification.html
-    if (currentPage === 'subscribe.html' || currentPage === 'notification.html') {
-      return;  // Skip subscription check on these pages
-    }
-
     const token = localStorage.getItem('token');
 
-    if (!token) {
-      window.location.href = "subscribe.html";
+    // If user is on subscribe.html and has token, redirect to notification.html
+    if (currentPage === 'subscribe.html' && token) {
+      window.location.href = 'notifications.html';
       return;
     }
 
-    try {
-      const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+    // If user is on notification.html but no token, redirect to subscribe.html
+    if (currentPage === 'notifications.html' && !token) {
+      window.location.href = 'subscribe.html';
+      return;
+    }
 
-      const data = await response.json();
-
-      if (response.ok && data.subscriptionStatus === 'active') {
-        // Redirect to notification page if subscription is active
-        window.location.href = "notification.html";
-      } else {
-        window.location.href = "subscribe.html";
-      }
-    } catch (error) {
-      console.error("Failed to check subscription status:", error);
-      window.location.href = "subscribe.html";
+    // If user is on any other page and no token, redirect to subscribe.html
+    if (currentPage !== 'subscribe.html' && currentPage !== 'notifications.html' && !token) {
+      window.location.href = 'subscribe.html';
+      return;
     }
   });
+
+  const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
 
   // Sidebar functionality
   function toggleSidebar() {
@@ -1001,4 +986,5 @@
     });
   });
 </script>
+
 </html>
