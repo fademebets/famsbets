@@ -865,6 +865,38 @@
   </div>
 
   <script>
+
+    // Check subscription status on page load
+document.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    window.location.href = "subscribe.html";
+    return;
+  }
+
+  try {
+    const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.subscriptionStatus === 'active') {
+      // Redirect to notification page if subscription is active
+      window.location.href = "notification.html";
+    } else {
+      window.location.href = "subscribe.html";
+    }
+  } catch (error) {
+    console.error("Failed to check subscription status:", error);
+    window.location.href = "subscribe.html";
+  }
+});
+
     const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
 
     // Sidebar functionality
