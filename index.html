@@ -54,7 +54,7 @@
       padding: 5px 0;
     }
 
-   
+
 
     /* Dropdown links style */
     .dropdown-content a {
@@ -365,16 +365,20 @@
       <a href="locks.html">Lock of the Day</a>
       <a href="standings.html">Standings</a>
 
+
       <div class="dropdown">
         <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
         <div class="dropdown-content">
           <a href="odds.html">Odds</a>
           <a href="ev-calculator.html">EV Calc</a>
           <a href="parlay-calculator.html">Parlay Calc</a>
+
         </div>
       </div>
 
       <a href="notifications.html">Profile</a>
+        <a href="login.html" id="loginBtnNav">Login</a>
+
     </div>
   </nav>
 
@@ -407,6 +411,8 @@
           </li>
 
           <li><a href="notifications.html">Profile</a></li>
+              <li><a href="login.html" id="loginBtnSidebar">Login</a></li>
+
         </ul>
       </div>
     </div>
@@ -427,6 +433,17 @@
   </div>
 
   <script>
+
+     const token = localStorage.getItem('token');
+
+  // Show/hide login buttons based on token existence
+  if (token) {
+    document.getElementById('loginBtnNav').style.display = 'none';
+    document.getElementById('loginBtnSidebar').style.display = 'none';
+  } else {
+    document.getElementById('loginBtnNav').style.display = 'block';
+    document.getElementById('loginBtnSidebar').style.display = 'block';
+  }
   function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';

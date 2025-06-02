@@ -590,61 +590,70 @@
 </head>
 <body>
     <nav>
-        <div class="logo-container">
-            <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
-                <img src="/logo.png" alt="FadeMeBets Logo" />
-                <span class="logo-text">FadeMeBets</span>
-            </a>
-        </div>
-        <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-        <div class="menu">
-            <a href="subscribe.html">Subscribe</a>
-            <a href="ev.html">+EV</a>
-            <a href="locks.html">Lock of the Day</a>
-            <a href="standings.html">Standings</a>
-            <div class="dropdown">
-                <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
-                <div class="dropdown-content">
-                    <a href="odds.html">Odds</a>
-                    <a href="ev-calculator.html">EV Calc</a>
-                    <a href="parlay-calculator.html">Parlay Calc</a>
-                </div>
-            </div>
-            <a href="notifications.html">Profile</a>
-        </div>
-    </nav>
+    <div class="logo-container">
+      <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+        <img src="/logo.png" alt="FadeMeBets Logo" />
+        <span class="logo-text">FadeMeBets</span>
+      </a>
+    </div>
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="menu">
+      <a href="subscribe.html">Subscribe</a>
+      <a href="ev.html">+EV</a>
+      <a href="locks.html">Lock of the Day</a>
+      <a href="standings.html">Standings</a>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <div class="main">
-        <div class="sidebar" id="sidebar">
-            <div class="nav-section">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="subscribe.html">Subscribe</a></li>
-                    <li><a href="ev.html">+EV</a></li>
-                    <li><a href="locks.html">Lock of the Day</a></li>
-                    <li><a href="standings.html">Standings</a></li>
-                    <li><a href="odds.html">Odds Calculator</a></li>
-                    <li><a href="ev-calculator.html">EV Calculator</a></li>
-                    <li><a href="parlay-calculator.html">Parlay Calculator</a></li>
-                    <li><a href="notifications.html">Profile</a></li>
-                </ul>
-            </div>
+      <div class="dropdown">
+        <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
+        <div class="dropdown-content">
+          <a href="odds.html">Odds</a>
+          <a href="ev-calculator.html">EV Calc</a>
+          <a href="parlay-calculator.html">Parlay Calc</a>
 
-            <div class="filter-section">
-                <h4>Filter by Sports</h4>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" onclick="filterBySport('all')">All</button>
-                    <button class="filter-btn" onclick="filterBySport('NBA')">NBA</button>
-                    <button class="filter-btn" onclick="filterBySport('NFL')">NFL</button>
-                    <button class="filter-btn" onclick="filterBySport('NCAAF')">NCAAF</button>
-                    <button class="filter-btn" onclick="filterBySport('NCAAB')">NCAAB</button>
-                    <button class="filter-btn" onclick="filterBySport('MLB')">MLB</button>
-                    <button class="filter-btn" onclick="filterBySport('UFC')">UFC</button>
-                </div>
-            </div>
         </div>
+      </div>
+
+      <a href="notifications.html">Profile</a>
+        <a href="login.html" id="loginBtnNav">Login</a>
+
+    </div>
+  </nav>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <div class="main">
+    <!-- Sidebar with mobile navigation -->
+    <div class="sidebar" id="sidebar">
+      <h3>FadeMeBets</h3>
+
+      <!-- Mobile Navigation Menu -->
+      <div class="mobile-nav">
+        <ul>
+          <li><a href="subscribe.html">Subscribe</a></li>
+          <li><a href="ev.html">+EV</a></li>
+          <li><a href="locks.html">Lock of the Day</a></li>
+          <li><a href="standings.html">Standings</a></li>
+
+          <!-- Mobile dropdown for calculators -->
+          <li class="mobile-dropdown">
+            <button class="mobile-dropdown-btn" onclick="toggleMobileDropdown()">
+              Calculators ▼
+            </button>
+            <div class="mobile-dropdown-content" id="mobileDropdownContent">
+              <a href="odds.html">Odds</a>
+              <a href="ev-calculator.html">EV Calc</a>
+              <a href="parlay-calculator.html">Parlay Calc</a>
+            </div>
+          </li>
+
+          <li><a href="notifications.html">Profile</a></li>
+              <li><a href="login.html" id="loginBtnSidebar">Login</a></li>
+
+        </ul>
+      </div>
+    </div>
 
         <div class="content-ev">
             <h1>+EV Betting Opportunities</h1>
@@ -680,6 +689,16 @@
 
     <script>
 
+  const token = localStorage.getItem('token');
+
+  // Show/hide login buttons based on token existence
+  if (token) {
+    document.getElementById('loginBtnNav').style.display = 'none';
+    document.getElementById('loginBtnSidebar').style.display = 'none';
+  } else {
+    document.getElementById('loginBtnNav').style.display = 'block';
+    document.getElementById('loginBtnSidebar').style.display = 'block';
+  }
       function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';

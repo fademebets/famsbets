@@ -585,25 +585,32 @@
       <a href="locks.html">Lock of the Day</a>
       <a href="standings.html">Standings</a>
 
+
       <div class="dropdown">
         <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
         <div class="dropdown-content">
           <a href="odds.html">Odds</a>
           <a href="ev-calculator.html">EV Calc</a>
           <a href="parlay-calculator.html">Parlay Calc</a>
+
         </div>
       </div>
 
       <a href="notifications.html">Profile</a>
+        <a href="login.html" id="loginBtnNav">Login</a>
+
     </div>
   </nav>
 
+  <!-- Sidebar overlay for mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <div class="main">
+    <!-- Sidebar with mobile navigation -->
     <div class="sidebar" id="sidebar">
       <h3>FadeMeBets</h3>
 
+      <!-- Mobile Navigation Menu -->
       <div class="mobile-nav">
         <ul>
           <li><a href="subscribe.html">Subscribe</a></li>
@@ -611,6 +618,7 @@
           <li><a href="locks.html">Lock of the Day</a></li>
           <li><a href="standings.html">Standings</a></li>
 
+          <!-- Mobile dropdown for calculators -->
           <li class="mobile-dropdown">
             <button class="mobile-dropdown-btn" onclick="toggleMobileDropdown()">
               Calculators ▼
@@ -623,6 +631,8 @@
           </li>
 
           <li><a href="notifications.html">Profile</a></li>
+              <li><a href="login.html" id="loginBtnSidebar">Login</a></li>
+
         </ul>
       </div>
     </div>
@@ -665,6 +675,17 @@
   </div>
 
   <script>
+
+      const token = localStorage.getItem('token');
+
+  // Show/hide login buttons based on token existence
+  if (token) {
+    document.getElementById('loginBtnNav').style.display = 'none';
+    document.getElementById('loginBtnSidebar').style.display = 'none';
+  } else {
+    document.getElementById('loginBtnNav').style.display = 'block';
+    document.getElementById('loginBtnSidebar').style.display = 'block';
+  }
     // API endpoints
     const API_ENDPOINTS = {
       nfl: 'https://famsbets.onrender.com/api/nfl-standings',

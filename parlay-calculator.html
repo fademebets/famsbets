@@ -1,301 +1,592 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parlay Calculator - FadeMeBets</title>
     <link rel="icon" href="/logo.png"/>
-   <link rel="stylesheet" href="styles.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <style>
-      body {
-    background: #f0f2f5;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-/* Navbar styling */
-nav {
-    background: #c8102e;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 30px;
-}
+        body {
+            background: #f0f2f5;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        /* Navbar styling */
+        nav {
+            background: #c8102e;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 30px;
+            position: relative;
+            z-index: 999;
+        }
 
-.logo-container img {
-    height: 36px;
-}
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.logo-text {
-    font-size: 20px;
-    font-weight: 600;
-    color: #c8102e;
-}
+        .logo-container img {
+            height: 36px;
+        }
 
-.menu {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
 
-.menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: color 0.2s;
-}
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
 
-.menu a:hover {
-    color: #c8102e;
-}
+        .menu a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
 
-.dropdown {
-    position: relative;
-}
+        .menu a:hover {
+            color: #ffcccc;
+        }
 
-.dropbtn {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    color: white;
-    font-weight: 500;
-}
+        .dropdown {
+            position: relative;
+        }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background: #c8102e;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    margin-top: 10px;
-    min-width: 160px;
-    z-index: 1;
-}
+        .dropbtn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+        }
 
-.dropdown-content a {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-}
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #c8102e;;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            margin-top: 10px;
+            min-width: 160px;
+            z-index: 1;
+            right: 0;
+        }
 
-.dropdown-content a:hover {
-    background: #f0f0f0;
-}
+        .dropdown-content a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: white;
+        }
 
+        .dropdown-content a:hover {
+            background: #c8102e;
+            color: white;
+        }
 
-/* Main content centering */
-.main {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
-}
+        /* Sidebar toggle button */
+        .sidebar-toggle {
+            display: none;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+        }
 
-.content {
-    width: 100%;
-    max-width: 500px;
-}
+        /* Sidebar styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: linear-gradient(180deg, #1c2a39 0%, #2d3e50 100%);
+            padding: 1rem;
+            transform: translateX(-100%);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            display: none;
+        }
 
-/* Card Styling */
-.card {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-}
+        .sidebar.active {
+            display: block;
+            transform: translateX(0);
+        }
 
-.card h2 {
-    margin-top: 0;
-    text-align: center;
-    font-size: 26px;
-    margin-bottom: 25px;
-    color: #333;
-}
+        .sidebar h3 {
+            color: white;
+            margin-top: 0;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
 
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    font-size: 16px;
-    color: #555;
-}
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
 
-.info-row strong {
-    color: #222;
-}
+        .sidebar-overlay.active {
+            display: block;
+        }
 
-.input-group {
-    margin: 20px 0 10px;
-}
+        .mobile-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-.input-group label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
+        .mobile-nav li {
+            margin-bottom: 10px;
+        }
 
-.input-group input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-}
+        .mobile-nav a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
 
-.parlay-leg {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
+        .mobile-nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
 
-.parlay-leg input {
-    flex: 1;
-    padding: 0.85rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    background: #f9f9f9;
-    color: #333;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    outline: none;
-}
+        .mobile-dropdown-btn {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
 
-.parlay-leg input::placeholder {
-    color: #aaa;
-}
+        .mobile-dropdown-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
 
-.parlay-leg input:focus {
-    border-color: #c8102e;
-    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
-    background: #fff;
-}
+        .mobile-dropdown-content {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            margin-top: 5px;
+            padding: 5px;
+        }
 
-button {
-  font-family: 'Poppins', sans-serif;
-    padding: 14px;
-    width: 100%;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
-}
+        .mobile-dropdown-content.active {
+            display: block;
+        }
 
-.btn-primary {
-    background: #c8102e;
-    color: #fff;
-}
-.btn-primary:hover {
-    background: #a30d24;
-}.btn-secondary:hover {
-    background: #bbb;
-}
-.btn-secondary {
-    background: #ccc;
-    color: #333;
-}
+        .mobile-dropdown-content a {
+            padding: 8px 15px;
+            margin: 2px 0;
+        }
 
-.result {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    font-size: 16px;
-    color: #333;
-}
+        /* Main content centering */
+        .main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
 
+        .content {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* Card Styling */
+        .card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .info-row strong {
+            color: #222;
+        }
+
+        .input-group {
+            margin: 20px 0 10px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .parlay-leg {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .parlay-leg input {
+            flex: 1;
+            padding: 0.85rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f9f9f9;
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+
+        .parlay-leg input::placeholder {
+            color: #aaa;
+        }
+
+        .parlay-leg input:focus {
+            border-color: #c8102e;
+            box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.15);
+            background: #fff;
+        }
+
+        button {
+            font-family: 'Poppins', sans-serif;
+            padding: 14px;
+            width: 100%;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #c8102e;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #a30d24;
+        }
+
+        .btn-secondary {
+            background: #ccc;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #bbb;
+        }
+
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Mobile Responsive Design */
+        @media screen and (max-width: 768px) {
+            nav {
+                padding: 12px 20px;
+            }
+
+            .menu {
+                display: none;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .logo-text {
+                font-size: 18px;
+            }
+
+            .logo-container img {
+                height: 32px;
+            }
+
+            .main {
+                padding: 20px 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card h2 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
+            .info-row {
+                font-size: 14px;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .parlay-leg {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .parlay-leg input {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            .input-group input {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            nav {
+                padding: 10px 15px;
+            }
+
+            .logo-text {
+                font-size: 16px;
+            }
+
+            .logo-container img {
+                height: 28px;
+            }
+
+            .main {
+                padding: 15px 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card h2 {
+                font-size: 20px;
+            }
+
+            .info-row {
+                font-size: 13px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 15px;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            .main {
+                align-items: flex-start;
+                padding: 20px 15px;
+            }
+        }
     </style>
 </head>
 <body>
-   <nav>
+    <nav>
         <div class="logo-container">
-            <img src="/logo.png" alt="FadeMeBets Logo">
-            <span class="logo-text">FadeMeBets</span>
+            <a href="/index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="/logo.png" alt="FadeMeBets Logo" />
+                <span class="logo-text">FadeMeBets</span>
+            </a>
         </div>
-         <div class="menu">
-  <a href="subscribe.html">Subscribe</a>
-  <a href="ev.html">+EV</a>
-  <a href="locks.html">Lock of the Day</a>
-  <a href="standings.html">Standings</a>
-
-  <div class="dropdown">
-    <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
-    <div class="dropdown-content">
-      <a href="odds.html">Odds</a>
-      <a href="ev-calculator.html">EV Calc</a>
-      <a href="parlay-calculator.html">Parlay Calc</a>
-    </div>
-  </div>
-
-  <a href="notifications.html">Profile</a>
-</div>
+        <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+        <div class="menu">
+            <a href="subscribe.html">Subscribe</a>
+            <a href="ev.html">+EV</a>
+            <a href="locks.html">Lock of the Day</a>
+            <a href="standings.html">Standings</a>
+            <div class="dropdown">
+                <button onclick="toggleDropdown()" class="dropbtn">Calculators ▼</button>
+                <div class="dropdown-content">
+                    <a href="odds.html">Odds</a>
+                    <a href="ev-calculator.html">EV Calc</a>
+                    <a href="parlay-calculator.html">Parlay Calc</a>
+                </div>
+            </div>
+            <a href="notifications.html">Profile</a>
+            <a href="login.html" id="loginBtnNav">Login</a>
+        </div>
     </nav>
 
- <div class="main">
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-
-    <div class="content">
-
-    <div class="card">
-        <h2>Parlay Calculator</h2>
-
-        <div class="info-row"><span>Expected Winnings:</span> <strong id="winnings">$0.00</strong></div>
-        <div class="info-row"><span>Expected Payout:</span> <strong id="payout">$0.00</strong></div>
-        <div class="info-row"><span>Parlay Odds:</span> <strong id="parlay-odds">–</strong></div>
-
-        <div class="input-group">
-            <label>Bet Amount ($)</label>
-            <input type="number" id="betAmount" placeholder="e.g. 10" value="10">
+    <div class="main">
+        <!-- Sidebar with mobile navigation -->
+        <div class="sidebar" id="sidebar">
+            <h3>FadeMeBets</h3>
+            <!-- Mobile Navigation Menu -->
+            <div class="mobile-nav">
+                <ul>
+                    <li><a href="subscribe.html">Subscribe</a></li>
+                    <li><a href="ev.html">+EV</a></li>
+                    <li><a href="locks.html">Lock of the Day</a></li>
+                    <li><a href="standings.html">Standings</a></li>
+                    <!-- Mobile dropdown for calculators -->
+                    <li class="mobile-dropdown">
+                        <button class="mobile-dropdown-btn" onclick="toggleMobileDropdown()">
+                            Calculators ▼
+                        </button>
+                        <div class="mobile-dropdown-content" id="mobileDropdownContent">
+                            <a href="odds.html">Odds</a>
+                            <a href="ev-calculator.html">EV Calc</a>
+                            <a href="parlay-calculator.html">Parlay Calc</a>
+                        </div>
+                    </li>
+                    <li><a href="notifications.html">Profile</a></li>
+                    <li><a href="login.html" id="loginBtnSidebar">Login</a></li>
+                </ul>
+            </div>
         </div>
 
-        <div id="legs-container"></div>
+        <div class="content">
+            <div class="card">
+                <h2>Parlay Calculator</h2>
 
-        <button class="btn-primary" onclick="addLeg()">+ Add Parlay Leg</button>
-        <button class="btn-secondary" onclick="resetParlay()">Reset Parlay</button>
-<button class="btn-primary" onclick="calculateParlay()">Generate Odds</button>
+                <div class="info-row"><span>Expected Winnings:</span> <strong id="winnings">$0.00</strong></div>
+                <div class="info-row"><span>Expected Payout:</span> <strong id="payout">$0.00</strong></div>
+                <div class="info-row"><span>Parlay Odds:</span> <strong id="parlay-odds">–</strong></div>
 
-        <div class="result">
-            Only American Odds Supported (e.g. -110, +150)
+                <div class="input-group">
+                    <label>Bet Amount ($)</label>
+                    <input type="number" id="betAmount" placeholder="e.g. 10" value="10">
+                </div>
+
+                <div id="legs-container"></div>
+
+                <button class="btn-primary" onclick="addLeg()">+ Add Parlay Leg</button>
+                <button class="btn-secondary" onclick="resetParlay()">Reset Parlay</button>
+                <button class="btn-primary" onclick="calculateParlay()">Generate Odds</button>
+
+                <div class="result">
+                    Only American Odds Supported (e.g. -110, +150)
+                </div>
+            </div>
         </div>
-
     </div>
-</div></div>
+
+
     <script>
+
+        const token = localStorage.getItem('token');
+
+  // Show/hide login buttons based on token existence
+  if (token) {
+    document.getElementById('loginBtnNav').style.display = 'none';
+    document.getElementById('loginBtnSidebar').style.display = 'none';
+  } else {
+    document.getElementById('loginBtnNav').style.display = 'block';
+    document.getElementById('loginBtnSidebar').style.display = 'block';
+  }
       function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
   }
 
-  // Close dropdown if clicking outside
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      for (var i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
-      }
-    }
-  }
-  
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        function toggleMobileDropdown() {
+            const dropdownContent = document.getElementById('mobileDropdownContent');
+            dropdownContent.classList.toggle('active');
+        }
+
+        // Close dropdown if clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
+        }
+
         let legCount = 0;
 
         function addLeg() {
