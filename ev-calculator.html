@@ -605,7 +605,7 @@
                 </button>
 
                 <div class="result">
-                    <strong>Expected Value:</strong> <span id="expectedValue">$0.00</span>
+                    <strong>Expected Value:</strong> <span id="expectedValue">0.00</span>
                 </div>
             </div>
 
@@ -663,47 +663,50 @@
       }
     }
   }
-        function calculateEV() {
-            const calculateBtn = document.getElementById('calculateBtn');
-            calculateBtn.classList.add('calculating');
-            calculateBtn.textContent = 'Calculating...';
+    function calculateEV() {
+    const calculateBtn = document.getElementById('calculateBtn');
+    calculateBtn.classList.add('calculating');
+    calculateBtn.textContent = 'Calculating...';
 
-            // Add slight delay for better UX
-            setTimeout(() => {
-                const wager = parseFloat(document.getElementById('wager').value);
-                const odds = parseFloat(document.getElementById('odds').value);
-                const winProb = parseFloat(document.getElementById('winProb').value) / 100;
+    setTimeout(() => {
+        const wager = parseFloat(document.getElementById('wager').value);
+        const odds = parseFloat(document.getElementById('odds').value);
+        const winProb = parseFloat(document.getElementById('winProb').value) / 100;
 
-                if (isNaN(wager) || isNaN(odds) || isNaN(winProb) || wager <= 0 || winProb < 0 || winProb > 1) {
-                    alert('Please enter valid values:\n• Wager must be positive\n• Odds can be positive or negative\n• Win probability must be between 0-100%');
-                    calculateBtn.classList.remove('calculating');
-                    calculateBtn.textContent = 'Calculate Expected Value';
-                    return;
-                }
-
-                let profitIfWin = 0;
-                if (odds > 0) {
-                    profitIfWin = (odds / 100) * wager;
-                } else {
-                    profitIfWin = (100 / Math.abs(odds)) * wager;
-                }
-
-                const expectedValue = (winProb * profitIfWin) - ((1 - winProb) * wager);
-                const evElement = document.getElementById('expectedValue');
-
-                evElement.textContent = `$${expectedValue.toFixed(2)}`;
-                evElement.style.color = expectedValue >= 0 ? '#28a745' : '#dc3545';
-
-                // Add animation to result
-                evElement.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    evElement.style.transform = 'scale(1)';
-                }, 200);
-
-                calculateBtn.classList.remove('calculating');
-                calculateBtn.textContent = 'Calculate Expected Value';
-            }, 500);
+        if (isNaN(wager) || isNaN(odds) || isNaN(winProb) || wager <= 0 || winProb < 0 || winProb > 1) {
+            alert('Please enter valid values:\n• Wager must be positive\n• Odds can be positive or negative\n• Win probability must be between 0-100%');
+            calculateBtn.classList.remove('calculating');
+            calculateBtn.textContent = 'Calculate Expected Value';
+            return;
         }
+
+        // Calculate PROFIT if the bet wins
+        let profitIfWin = 0;
+        if (odds > 0) {
+            profitIfWin = (odds / 100) * wager;
+        } else {
+            profitIfWin = (100 / Math.abs(odds)) * wager;
+        }
+
+        const lossIfLose = wager;
+
+        // Corrected EV profit formula
+        const expectedProfit = (winProb * profitIfWin) - ((1 - winProb) * lossIfLose);
+
+        const evElement = document.getElementById('expectedValue');
+        evElement.textContent = expectedProfit.toFixed(2); // Just number, no "$"
+        evElement.style.color = expectedProfit >= 0 ? '#28a745' : '#dc3545';
+
+        // Add animation
+        evElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            evElement.style.transform = 'scale(1)';
+        }, 200);
+
+        calculateBtn.classList.remove('calculating');
+        calculateBtn.textContent = 'Calculate Expected Value';
+    }, 500);
+}
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
