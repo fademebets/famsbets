@@ -787,7 +787,7 @@
   // Fetch picks from API
   async function loadEVPicks() {
     try {
-      const response = await fetch("http://localhost:5000/api/odds/team");
+      const response = await fetch("https://famsbets.onrender.com/api/odds/team");
       const data = await response.json();
       console.log("API Data:", data);
 
