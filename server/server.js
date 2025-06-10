@@ -14,6 +14,7 @@ const stripeWebhookRoute = require('./routes/stripeWebhook');
 const confirmSessionRoute = require('./routes/confirmsession');
 const authRoutes = require('./routes/authRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const oddsRoutes = require("./routes/oddsRoutes");
 
 // Initialize app
 const app = express();
@@ -43,6 +44,7 @@ app.use('/api/lock', lockRoutes);
 app.use('/api', scrapeRoutes);
 app.use('/api', standingsRoutes);
 
+app.use("/api/odds", oddsRoutes);
 // Server start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
