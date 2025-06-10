@@ -186,6 +186,10 @@
             margin-bottom: 0.5rem;
         }
 
+        .error{
+          color: black;
+        }
+
         .sidebar a {
             display: block;
             color: white;
@@ -237,12 +241,13 @@
             color: #c8102e;
         }
 
-        /* Content */
-        .content-ev {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
+       /* Content */
+.content-ev {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: visible;
+}
+
 
         .content-ev h1 {
             color: #c8102e;
@@ -471,7 +476,7 @@
         .loading, .error {
             text-align: center;
             padding: 2rem;
-            color: white;
+            color: black;
             font-size: 1.1rem;
         }
 
@@ -586,6 +591,11 @@
                 font-size: 0.8rem;
             }
         }
+        @media (min-width: 769px) {
+  .sidebar {
+    display: none;
+  }
+}
     </style>
 </head>
 <body>
@@ -680,18 +690,15 @@
                 <div class="loading">Loading +EV picks...</div>
             </div>
 
-            <div class="pagination" id="pagination" style="display: none;">
-                <div class="pagination-info" id="paginationInfo"></div>
-                <div class="pagination-buttons" id="paginationButtons"></div>
-            </div>
+
         </div>
     </div>
 
-    <script>
 
+    <script>
+  // Auth token check and login button toggle
   const token = localStorage.getItem('token');
 
-  // Show/hide login buttons based on token existence
   if (token) {
     document.getElementById('loginBtnNav').style.display = 'none';
     document.getElementById('loginBtnSidebar').style.display = 'none';
@@ -699,7 +706,9 @@
     document.getElementById('loginBtnNav').style.display = 'block';
     document.getElementById('loginBtnSidebar').style.display = 'block';
   }
-      function toggleDropdown() {
+
+  // Dropdown toggle
+  function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
   }
@@ -707,307 +716,214 @@
   // Close dropdown if clicking outside
   window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      for (var i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
+      const dropdowns = document.getElementsByClassName("dropdown-content");
+      for (let i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].style.display = "none";
       }
     }
+  };
+
+  // Sidebar toggle
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
   }
-        let allPicks = [];
-        let filteredPicks = [];
-        let currentPage = 1;
-        let itemsPerPage = 10;
-        let currentSportFilter = 'all';
 
-        function checkSubscription() {
-            document.addEventListener("DOMContentLoaded", async () => {
-                const token = localStorage.getItem('token');
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.sidebar-toggle');
 
-                if (!token) {
-                    window.location.href = "subscribe.html";
-                    return;
-                }
+    if (window.innerWidth <= 768 &&
+        sidebar.classList.contains('open') &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)) {
+      toggleSidebar();
+    }
+  });
 
-                try {
-                    const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+  // Subscription check on page load
+  document.addEventListener("DOMContentLoaded", async () => {
+    await checkSubscription();
+    loadEVPicks();
+  });
 
-                    const data = await response.json();
+  async function checkSubscription() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "subscribe.html";
+      return;
+    }
 
-                    if (!response.ok || data.subscriptionStatus !== 'active') {
-                        window.location.href = "subscribe.html";
-                    }
-                } catch (error) {
-                    console.error("Failed to check subscription status:", error);
-                    window.location.href = "subscribe.html";
-                }
-            });
+    try {
+      const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      });
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
+      const data = await response.json();
 
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
+      if (!response.ok || data.subscriptionStatus !== 'active') {
+        window.location.href = "subscribe.html";
+      }
+    } catch (error) {
+      console.error("Failed to check subscription status:", error);
+      window.location.href = "subscribe.html";
+    }
+  }
 
-        async function loadEVPicks() {
-            try {
-                const response = await fetch('https://famsbets.onrender.com/api/oddstrader');
-                const data = await response.json();
+  let allPicks = [];
+  let filteredPicks = [];
 
-                allPicks = data.picks || [];
-                applyFilters();
-            } catch (error) {
-                console.error('Error loading picks:', error);
-                document.getElementById('ev-picks').innerHTML =
-                    '<div class="error">Failed to load picks. Please try again later.</div>';
-            }
-        }
+  // Load picks on page load
+  window.addEventListener("DOMContentLoaded", () => {
+    loadEVPicks();
+  });
 
-        function applyFilters() {
-            let filtered = [...allPicks];
+  // Fetch picks from API
+  async function loadEVPicks() {
+    try {
+      const response = await fetch("http://localhost:5000/api/odds/team");
+      const data = await response.json();
+      console.log("API Data:", data);
 
-            // Apply sport filter
-            if (currentSportFilter !== 'all') {
-                filtered = filtered.filter(pick => {
-                    const sport = formatSport(pick.sport);
-                    return sport === currentSportFilter;
-                });
-            }
+      if (!data.success || !data.results || data.results.length === 0) {
+        document.getElementById("ev-picks").innerHTML =
+          "<div class='error'>Reached the limit.</div>";
+        return;
+      }
 
-            // Apply search filter
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            if (searchTerm) {
-                filtered = filtered.filter(pick => {
-                    const sport = formatSport(pick.sport).toLowerCase();
-                    const teams = pick.bookmakers.flatMap(bm =>
-                        bm.markets.flatMap(m =>
-                            m.outcomes.map(o => o.name.toLowerCase())
-                        )
-                    );
+      // Flatten odds from all sports, and attach sport_title to each pick
+      allPicks = data.results.flatMap(result =>
+        result.odds.map(odd => ({
+          ...odd,
+          sport_title: result.sport.title
+        }))
+      );
 
-                    return sport.includes(searchTerm) ||
-                           teams.some(team => team.includes(searchTerm));
-                });
-            }
+      if (allPicks.length === 0) {
+        document.getElementById("ev-picks").innerHTML =
+          "<div class='error'>No picks found.</div>";
+        return;
+      }
 
-            filteredPicks = filtered;
-            currentPage = 1;
-            displayPicks();
-            updatePagination();
-        }
+      applyFilters();
+    } catch (error) {
+      console.error("Error loading picks:", error);
+      document.getElementById("ev-picks").innerHTML =
+        "<div class='error'>Failed to load picks. Please try again later.</div>";
+    }
+  }
 
-        function filterBySport(sport) {
-            currentSportFilter = sport;
+  // Apply search filter
+  function applyFilters() {
+    const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
-            // Update active button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
+    filteredPicks = allPicks.filter(pick => {
+      const home = pick.home_team.toLowerCase();
+      const away = pick.away_team.toLowerCase();
+      return (
+        home.includes(searchTerm) ||
+        away.includes(searchTerm)
+      );
+    });
 
-            applyFilters();
-        }
+    displayPicks();
+  }
 
-        function displayPicks() {
-            const container = document.getElementById('ev-picks');
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const picksToShow = filteredPicks.slice(startIndex, endIndex);
+  // Render filtered picks (all at once, no pagination)
+  function displayPicks() {
+    const container = document.getElementById("ev-picks");
 
-            if (picksToShow.length === 0) {
-                container.innerHTML = '<div class="error">No picks found matching your criteria.</div>';
-                return;
-            }
+    if (filteredPicks.length === 0) {
+      container.innerHTML = "<div class='error'>No picks found.</div>";
+      return;
+    }
 
-            const html = picksToShow.map(pick => createGameCard(pick)).join('');
-            container.innerHTML = html;
-        }
+    const html = filteredPicks.map(pick => createGameCard(pick)).join("");
+    container.innerHTML = html;
+  }
 
-        function createGameCard(pick) {
-            const sport = formatSport(pick.sport);
-            const gameTime = new Date(pick.commence_time).toLocaleString();
+  // Generate HTML for a game card
+  function createGameCard(pick) {
+    const gameTime = new Date(pick.commence_time).toLocaleString();
 
-            return `
-                <div class="game-card">
-                    <div class="game-header">
-                        <div class="sport-badge">${sport}</div>
-                        <div class="game-time">${gameTime}</div>
-                    </div>
-                    <div class="bookmakers-grid">
-                        ${pick.bookmakers.map(bookmaker => createBookmakerCard(bookmaker)).join('')}
-                    </div>
-                </div>
-            `;
-        }
+    return `
+      <div class="game-card">
+        <div class="game-header">
+          <div class="sport-badge">${pick.sport_title}</div>
+          <div class="game-time">${gameTime}</div>
+        </div>
+        <div class="teams">
+          <div class="team">${pick.away_team}</div>
+          <div class="vs">vs</div>
+          <div class="team">${pick.home_team}</div>
+        </div>
+        <div class="bookmakers-grid">
+          ${pick.bookmakers.map(bookmaker => createBookmakerCard(bookmaker)).join("")}
+        </div>
+      </div>
+    `;
+  }
 
-        function createBookmakerCard(bookmaker) {
-            return `
-                <div class="bookmaker-card">
-                    <div class="bookmaker-title">${bookmaker.title}</div>
-                    ${bookmaker.markets.map(market => createMarketSection(market)).join('')}
-                </div>
-            `;
-        }
+  // Generate HTML for a bookmaker card
+  function createBookmakerCard(bookmaker) {
+    return `
+      <div class="bookmaker-card">
+        <div class="bookmaker-title">${bookmaker.title}</div>
+        ${bookmaker.markets.map(market => createMarketSection(market)).join("")}
+      </div>
+    `;
+  }
 
-        function createMarketSection(market) {
-            const marketTitle = formatMarketKey(market.key);
+  // Generate HTML for a market section
+  function createMarketSection(market) {
+    const marketTitle = formatMarketKey(market.key);
+    return `
+      <div class="market">
+        <div class="market-title">${marketTitle}</div>
+        <div class="outcomes">
+          ${market.outcomes.map(outcome => createOutcome(outcome)).join("")}
+        </div>
+      </div>
+    `;
+  }
 
-            return `
-                <div class="market">
-                    <div class="market-title">${marketTitle}</div>
-                    <div class="outcomes">
-                        ${market.outcomes.map(outcome => createOutcome(outcome)).join('')}
-                    </div>
-                </div>
-            `;
-        }
+  // Generate HTML for each outcome
+  function createOutcome(outcome) {
+    return `
+      <div class="outcome">
+        <div class="outcome-name">${outcome.name}</div>
+        <div class="outcome-price">${formatPrice(outcome.price)}</div>
+      </div>
+    `;
+  }
 
-        function createOutcome(outcome) {
-            const price = formatPrice(outcome.price);
-            const point = outcome.point ? ` (${outcome.point > 0 ? '+' : ''}${outcome.point})` : '';
+  // Format market key names
+  function formatMarketKey(key) {
+    const marketMap = {
+      "h2h": "Moneyline",
+      "spreads": "Point Spread",
+      "totals": "Over/Under"
+    };
+    return marketMap[key] || key.toUpperCase();
+  }
 
-            return `
-                <div class="outcome">
-                    <div class="outcome-name">
-                        ${outcome.name}
-                        ${point ? `<span class="outcome-point">${point}</span>` : ''}
-                    </div>
-                    <div class="outcome-price">${price}</div>
-                </div>
-            `;
-        }
+  // Format price values
+  function formatPrice(price) {
+    return (typeof price === "number") ? price.toFixed(2) : "-";
+  }
 
-        function formatSport(sport) {
-            const sportMap = {
-                'baseball_mlb': 'MLB',
-                'basketball_nba': 'NBA',
-                'americanfootball_nfl': 'NFL',
-                'americanfootball_ncaaf': 'NCAAF',
-                'basketball_ncaab': 'NCAAB',
-                'mma_mixed_martial_arts': 'UFC'
-            };
-            return sportMap[sport] || sport.toUpperCase();
-        }
+  // Search as you type
+  function searchGames() {
+    applyFilters();
+  }
+</script>
 
-        function formatMarketKey(key) {
-            const marketMap = {
-                'h2h': 'Moneyline',
-                'spreads': 'Point Spread',
-                'totals': 'Over/Under'
-            };
-            return marketMap[key] || key;
-        }
 
-        function formatPrice(price) {
-            if (price > 0) {
-                return `+${price}`;
-            }
-            return price.toString();
-        }
-
-        function updatePagination() {
-            const totalPages = Math.ceil(filteredPicks.length / itemsPerPage);
-            const paginationContainer = document.getElementById('pagination');
-            const paginationInfo = document.getElementById('paginationInfo');
-            const paginationButtons = document.getElementById('paginationButtons');
-
-            if (totalPages <= 1) {
-                paginationContainer.style.display = 'none';
-                return;
-            }
-
-            paginationContainer.style.display = 'flex';
-
-            const startItem = (currentPage - 1) * itemsPerPage + 1;
-            const endItem = Math.min(currentPage * itemsPerPage, filteredPicks.length);
-
-            paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${filteredPicks.length} picks`;
-
-            let buttonsHTML = '';
-
-            buttonsHTML += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}"
-                           onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                           ← Previous</button>`;
-
-            const startPage = Math.max(1, currentPage - 2);
-            const endPage = Math.min(totalPages, currentPage + 2);
-
-            if (startPage > 1) {
-                buttonsHTML += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
-                if (startPage > 2) {
-                    buttonsHTML += `<span class="pagination-btn disabled">...</span>`;
-                }
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                buttonsHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}"
-                               onclick="changePage(${i})">${i}</button>`;
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    buttonsHTML += `<span class="pagination-btn disabled">...</span>`;
-                }
-                buttonsHTML += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
-            }
-
-            buttonsHTML += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}"
-                           onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                           Next →</button>`;
-
-            paginationButtons.innerHTML = buttonsHTML;
-        }
-
-        function changePage(page) {
-            const totalPages = Math.ceil(filteredPicks.length / itemsPerPage);
-            if (page < 1 || page > totalPages) return;
-
-            currentPage = page;
-            displayPicks();
-            updatePagination();
-
-            document.querySelector('.content-ev').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function changeItemsPerPage() {
-            itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
-            currentPage = 1;
-            displayPicks();
-            updatePagination();
-        }
-
-        function searchGames() {
-            applyFilters();
-        }
-
-        // Initialize page
-        window.addEventListener('DOMContentLoaded', () => {
-            checkSubscription();
-            loadEVPicks();
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.sidebar-toggle');
-
-            if (window.innerWidth <= 768 &&
-                sidebar.classList.contains('open') &&
-                !sidebar.contains(e.target) &&
-                !toggle.contains(e.target)) {
-                toggleSidebar();
-            }
-        });
-    </script>
 </body>
 </html>
