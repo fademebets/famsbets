@@ -886,7 +886,7 @@
     document.getElementById('loginBtnSidebar').style.display = 'block';
   }
 
-  
+
   document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname.split('/').pop();
     const token = localStorage.getItem('token');
@@ -910,7 +910,7 @@
     }
   });
 
-  const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+  const stripe = Stripe('pk_live_51RQgUTLfWCnW3JgTWjmvt7M2xuDqrctoeMvJ4WAfMCj8BueXqIwmVfpraxcUgsEyd9eovWFJgvVsIQKUp64M4Vbk00bY75IWOm');
 
   // Sidebar functionality
   function toggleSidebar() {
