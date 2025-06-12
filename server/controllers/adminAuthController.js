@@ -118,7 +118,7 @@ exports.notifyLockUpdate = async (req, res) => {
 
       try {
         await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+          from: `"FadeMeBets" <${process.env.EMAIL_USER}>`,
           to: user.email,
           subject: '🚨 Lock of the Day Updated!',
           html: `
@@ -147,16 +147,16 @@ exports.notifyLockUpdate = async (req, res) => {
           `,
         });
 
-        console.log(`Email sent to: ${user.email}`);
+        console.log(`✅ Email sent to: ${user.email}`);
       } catch (emailError) {
-        console.error(`Failed sending email to ${user.email}:`, emailError);
+        console.error(`❌ Failed sending email to ${user.email}:`, emailError);
       }
     }
 
     res.status(200).json({ message: 'Notifications sent to active subscribers.' });
 
   } catch (error) {
-    console.error('Full error sending notifications:', error);
+    console.error('❌ Full error sending notifications:', error);
     res.status(500).json({ message: 'Server error sending notifications.' });
   }
 };
