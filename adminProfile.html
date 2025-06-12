@@ -90,8 +90,8 @@
   <script>
 
      function notifySubscribers() {
-    fetch('https://famsbets.onrender.com/api/admin/notify-lock-update', {
-      method: 'POST'
+  fetch('https://famsbets.onrender.com/api/admin/notify-lock-update', {
+          method: 'POST'
     })
     .then(res => res.json())
     .then(data => alert(data.message))
