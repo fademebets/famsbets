@@ -36,27 +36,41 @@ exports.login = async (req, res) => {
 
 
 
-// Forgot Password - Send Code
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
+
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetCode = code;
-    user.resetCodeExpiry = Date.now() + 10 * 60 * 1000; // 10 mins
+    user.resetCodeExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
     await transporter.sendMail({
+      from: `"FadeMeBets" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: 'FadeMeBets User Password Reset Code',
-      text: `Your password reset code is ${code}. It expires in 10 minutes.`,
+      subject: 'FadeMeBets Password Reset Code',
+      html: `
+        <div style="max-width: 500px; margin: auto; padding: 20px; font-family: Arial, sans-serif; border: 1px solid #ddd; background: #f9f9f9;">
+          <h2 style="color: #c8102e;">Password Reset Code</h2>
+          <p style="font-size: 16px; color: #333;">Your password reset code is:</p>
+          <div style="font-size: 28px; font-weight: bold; margin: 20px 0; color: #000;">${code}</div>
+          <p style="font-size: 14px; color: #555;">This code will expire in 10 minutes.</p>
+          <p style="font-size: 13px; color: #999; margin-top: 20px;">If you didn't request a password reset, please ignore this email.</p>
+        </div>
+      `,
     });
 
+    console.log(`✅ Reset code sent to: ${email}`);
     res.json({ message: 'Reset code sent to email' });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('❌ Forgot password error:', error);
+    res.status(500).json({ message: 'Server error sending reset code' });
   }
 };
 
