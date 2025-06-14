@@ -3,6 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const transporter = require('../config/mailer');
 const User = require('../models/User');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY); // store your Resend API key in .env
+
 // Register Admin
 exports.register = async (req, res) => {
   const { email, password } = req.body;
@@ -110,6 +114,9 @@ exports.notifyLockUpdate = async (req, res) => {
       return res.status(404).json({ message: 'No active subscribers found.' });
     }
 
+    // Sleep helper
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     for (const user of activeUsers) {
       if (!user.email || !user.email.includes('@')) {
         console.warn(`Invalid email skipped: ${user.email}`);
@@ -117,8 +124,8 @@ exports.notifyLockUpdate = async (req, res) => {
       }
 
       try {
-        await transporter.sendMail({
-          from: `"FadeMeBets" <${process.env.EMAIL_USER}>`,
+        const response = await resend.emails.send({
+          from: 'FadeMeBets <team@fademebets.com>',
           to: user.email,
           subject: '🚨 Lock of the Day Updated!',
           html: `
@@ -148,6 +155,10 @@ exports.notifyLockUpdate = async (req, res) => {
         });
 
         console.log(`✅ Email sent to: ${user.email}`);
+
+        // Wait 5 seconds before sending next email
+        await sleep(10000);
+
       } catch (emailError) {
         console.error(`❌ Failed sending email to ${user.email}:`, emailError);
       }
