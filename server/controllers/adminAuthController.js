@@ -106,7 +106,10 @@ exports.resetPassword = async (req, res) => {
 exports.notifyLockUpdate = async (req, res) => {
   try {
     console.log('Fetching active subscribers...');
-    const activeUsers = await User.find({ subscriptionStatus: 'active' });
+    const activeUsers = await User.find(
+        { subscriptionStatus: 'active' },
+        { email: 1 }
+      );
 
     console.log('Active users found:', activeUsers.length);
 
