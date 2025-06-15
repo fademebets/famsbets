@@ -2,23 +2,23 @@ const User = require('../models/User');
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+
 exports.createCheckoutSession = async (req, res) => {
   try {
     const { email, plan } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required.' });
+    if (!email || !plan) {
+      return res.status(400).json({ message: 'Email and subscription plan are required.' });
     }
 
-    // Find user by email or create if doesn't exist
+    // 1️⃣ Find user by email (enforce unique)
     let user = await User.findOne({ email });
-
     if (!user) {
       user = new User({ email });
       await user.save();
     }
 
-    // Check if user has a valid Stripe customer, if not create one
+    // 2️⃣ Ensure Stripe Customer exists
     let stripeCustomerId = user.stripeCustomerId;
 
     if (stripeCustomerId) {
@@ -26,7 +26,7 @@ exports.createCheckoutSession = async (req, res) => {
         await stripe.customers.retrieve(stripeCustomerId);
       } catch (err) {
         if (err.code === 'resource_missing') {
-          const newCustomer = await stripe.customers.create({ email: user.email });
+          const newCustomer = await stripe.customers.create({ email });
           stripeCustomerId = newCustomer.id;
           user.stripeCustomerId = newCustomer.id;
           await user.save();
@@ -35,13 +35,23 @@ exports.createCheckoutSession = async (req, res) => {
         }
       }
     } else {
-      const newCustomer = await stripe.customers.create({ email: user.email });
+      const newCustomer = await stripe.customers.create({ email });
       stripeCustomerId = newCustomer.id;
       user.stripeCustomerId = newCustomer.id;
       await user.save();
     }
 
-    // Price details based on selected plan
+    // 3️⃣ Optional: Cancel existing active subscriptions
+    const subscriptions = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      status: 'active',
+    });
+
+    for (const subscription of subscriptions.data) {
+      await stripe.subscriptions.cancel(subscription.id);
+    }
+
+    // 4️⃣ Define price based on plan
     let priceData;
 
     if (plan === 'monthly') {
@@ -69,7 +79,7 @@ exports.createCheckoutSession = async (req, res) => {
       return res.status(400).json({ message: 'Invalid subscription plan selected.' });
     }
 
-    // Create Checkout Session
+    // 5️⃣ Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       payment_method_types: ['card'],
@@ -79,8 +89,8 @@ exports.createCheckoutSession = async (req, res) => {
       cancel_url: 'https://www.fademebets.com/subscribe.html',
     });
 
-
     res.json({ id: session.id });
+
   } catch (error) {
     console.error('Stripe session error:', error);
     res.status(500).json({ message: 'Internal Server Error' });

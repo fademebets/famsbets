@@ -174,10 +174,17 @@ exports.unsubscribeUser = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    // If already inactive
+    if (user.subscriptionStatus === 'inactive') {
+      return res.status(400).json({ message: 'Your subscription is already inactive.' });
+    }
+
+    // Set status to inactive
     user.subscriptionStatus = 'inactive';
     await user.save();
 
     res.json({ message: 'Your subscription has been successfully cancelled. We hope to see you back soon!' });
+
   } catch (error) {
     console.error('Error in unsubscribeUser:', error);
     res.status(500).json({ message: 'An error occurred while processing your unsubscription request.' });

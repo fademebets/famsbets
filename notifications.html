@@ -670,10 +670,76 @@
 
 
   <div id="change-password-status" class="notification-status"></div>
+
+   <div style="margin-top: 30px; text-align: center;">
+    <button onclick="handleRenewSubscription()" class="save-button"style="background-color: #4caf50;">
+      Update Subscription
+    </button>
+  </div>
+
+  <div style="margin-top: 15px; text-align: center;">
+  <button onclick="handleCheckSubscription()" class="save-button" >
+    Cancel Subscription
+  </button>
+</div>
+
+<!-- Message display div -->
+<div id="subscription-status-message" class="notification-status" style="margin-top: 10px;"></div>
+
 </div>
     </div>
 
    <script>
+
+
+async function handleCheckSubscription() {
+  const statusDiv = document.getElementById("subscription-status-message");
+  statusDiv.style.display = "none";
+  statusDiv.textContent = "";
+  statusDiv.classList.remove("error", "success");
+
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    statusDiv.textContent = "You are not logged in.";
+    statusDiv.classList.add("error");
+    statusDiv.style.display = "block";
+    return;
+  }
+
+  try {
+    const response = await fetch('https://famsbets.onrender.com/api/auth/unsubscribe', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      statusDiv.textContent = data.message || "Subscription status retrieved successfully.";
+      statusDiv.classList.add("success");
+      statusDiv.style.display = "block";
+    } else {
+      statusDiv.textContent = data.message || "Failed to retrieve subscription status.";
+      statusDiv.classList.add("error");
+      statusDiv.style.display = "block";
+    }
+
+  } catch (error) {
+    console.error("Error checking subscription status:", error);
+    statusDiv.textContent = "An error occurred while checking subscription status.";
+    statusDiv.classList.add("error");
+    statusDiv.style.display = "block";
+  }
+}
+
+
+
+function handleRenewSubscription() {
+  window.location.href = 'subscribe.html';
+}
 
     function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
@@ -698,7 +764,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const currentPage = window.location.pathname.split('/').pop();
 
   // Allow unrestricted access to notification.html
-  if (currentPage === 'notification.html') {
+  if (currentPage === 'notifications.html') {
     return;
   }
 

@@ -4,10 +4,7 @@ const Stripe = require('stripe');
 const User = require('../models/User');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-
-
-
-// Stripe requires the raw body to verify webhook signatures
+// Stripe requires raw body for signature verification
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
@@ -19,25 +16,53 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
+  try {
+    const eventType = event.type;
 
-    try {
+    if (eventType === 'checkout.session.completed') {
+      const session = event.data.object;
       const stripeCustomerId = session.customer;
 
-      // Find user by stripeCustomerId
       const user = await User.findOne({ stripeCustomerId });
       if (user) {
         user.subscriptionStatus = 'active';
         await user.save();
-        console.log(`User ${user.email} subscription activated.`);
+        console.log(`✅ User ${user.email} subscription activated.`);
       } else {
-        console.warn(`User with Stripe customer ID ${stripeCustomerId} not found.`);
+        console.warn(`⚠️ No user found for Stripe customer ID: ${stripeCustomerId}`);
       }
-    } catch (error) {
-      console.error('Error updating user subscription:', error);
-      return res.status(500).send('Internal Server Error');
     }
+
+    // Handle subscription cancellation
+    if (eventType === 'customer.subscription.deleted') {
+      const subscription = event.data.object;
+      const customerId = subscription.customer;
+
+      const user = await User.findOne({ stripeCustomerId: customerId });
+      if (user) {
+        user.subscriptionStatus = 'inactive';
+        await user.save();
+        console.log(`❌ User ${user.email} subscription cancelled.`);
+      }
+    }
+
+    // Handle subscription updated (status change)
+    if (eventType === 'customer.subscription.updated') {
+      const subscription = event.data.object;
+      const customerId = subscription.customer;
+      const status = subscription.status;
+
+      const user = await User.findOne({ stripeCustomerId: customerId });
+      if (user) {
+        user.subscriptionStatus = status;
+        await user.save();
+        console.log(`🔄 User ${user.email} subscription updated to ${status}.`);
+      }
+    }
+
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+    return res.status(500).send('Webhook handling error');
   }
 
   res.json({ received: true });
