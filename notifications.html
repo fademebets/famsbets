@@ -693,10 +693,16 @@
     }
   }
 
-// Check subscription status on page load
 document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem('token');
+  const currentPage = window.location.pathname.split('/').pop();
 
+  // Allow unrestricted access to notification.html
+  if (currentPage === 'notification.html') {
+    return;
+  }
+
+  // If no token, redirect to subscribe.html
   if (!token) {
     window.location.href = "subscribe.html";
     return;
@@ -712,6 +718,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await response.json();
 
+    // If token invalid or subscription not active, redirect (except on notification.html)
     if (!response.ok || data.subscriptionStatus !== 'active') {
       window.location.href = "subscribe.html";
     }

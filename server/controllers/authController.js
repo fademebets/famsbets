@@ -163,3 +163,23 @@ exports.getSubscriptionStatus = async (req, res) => {
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 };
+
+
+
+// Unsubscribe User
+exports.unsubscribeUser = async (req, res) => {
+  const userId = req.userId; // coming from your authMiddleware
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.subscriptionStatus = 'inactive';
+    await user.save();
+
+    res.json({ message: 'Your subscription has been successfully cancelled. We hope to see you back soon!' });
+  } catch (error) {
+    console.error('Error in unsubscribeUser:', error);
+    res.status(500).json({ message: 'An error occurred while processing your unsubscription request.' });
+  }
+};

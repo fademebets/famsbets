@@ -17,5 +17,8 @@ router.post('/change-password', authMiddleware, authController.changePassword);
 
 router.get('/subscription-status', authController.getSubscriptionStatus);
 
+router.post('/unsubscribe', authMiddleware, authController.unsubscribeUser);
+
+
 
 module.exports = router;

@@ -875,7 +875,8 @@
 </body>
 <script>
 
-    const token = localStorage.getItem('token');
+
+  const token = localStorage.getItem('token');
 
   // Show/hide login buttons based on token existence
   if (token) {
@@ -886,29 +887,34 @@
     document.getElementById('loginBtnSidebar').style.display = 'block';
   }
 
-
   document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname.split('/').pop();
     const token = localStorage.getItem('token');
 
-    // If user is on subscribe.html and has token, redirect to notification.html
-    if (currentPage === 'subscribe.html' && token) {
-      window.location.href = 'notifications.html';
-      return;
-    }
-
-    // If user is on notification.html but no token, redirect to subscribe.html
-    if (currentPage === 'notifications.html' && !token) {
-      window.location.href = 'subscribe.html';
-      return;
-    }
-
-    // If user is on any other page and no token, redirect to subscribe.html
-    if (currentPage !== 'subscribe.html' && currentPage !== 'notifications.html' && !token) {
-      window.location.href = 'subscribe.html';
-      return;
+    // ✅ Check subscription status and redirect if active
+    if (token) {
+      fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.subscriptionStatus === 'active') {
+          // If already on profile page, skip redirect to avoid reload loop
+          if (currentPage !== 'notifications.html') {
+            window.location.href = 'notifications.html';
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error checking subscription status:', error);
+      });
     }
   });
+
 
   const stripe = Stripe('pk_live_51RQgUTLfWCnW3JgTWjmvt7M2xuDqrctoeMvJ4WAfMCj8BueXqIwmVfpraxcUgsEyd9eovWFJgvVsIQKUp64M4Vbk00bY75IWOm');
 
