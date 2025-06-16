@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const transporter = require('../config/mailer'); // Adjust this path to your mail config
 
+const resend = require('../config/resend'); // new resend config
+
+
 exports.register = async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -35,7 +38,6 @@ exports.login = async (req, res) => {
 };
 
 
-
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -50,8 +52,8 @@ exports.forgotPassword = async (req, res) => {
     user.resetCodeExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
-    await transporter.sendMail({
-      from: `"FadeMeBets" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: 'FadeMeBets <no-reply@fademebets.com>',
       to: email,
       subject: 'FadeMeBets Password Reset Code',
       html: `
@@ -65,6 +67,11 @@ exports.forgotPassword = async (req, res) => {
       `,
     });
 
+    if (error) {
+      console.error('Resend error:', error);
+      return res.status(500).json({ message: 'Failed to send email' });
+    }
+
     console.log(`✅ Reset code sent to: ${email}`);
     res.json({ message: 'Reset code sent to email' });
 
@@ -73,6 +80,7 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error sending reset code' });
   }
 };
+
 
 // Verify Code and Reset Password
 exports.resetPassword = async (req, res) => {
