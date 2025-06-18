@@ -887,10 +887,15 @@
     </div>
 
     <script>
+<<<<<<< Updated upstream
   // Initialize Stripe with your public key
   const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
 
   // Parse session_id from URL query parameters
+=======
+
+const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
+>>>>>>> Stashed changes
   const urlParams = new URLSearchParams(window.location.search);
   const sessionId = urlParams.get('session_id');
 
@@ -935,7 +940,13 @@
   // Immediately call finalizeSubscription on script load
   finalizeSubscription();
 
+<<<<<<< Updated upstream
   // Dropdown toggle function for desktop
+=======
+
+
+
+>>>>>>> Stashed changes
   function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
