@@ -484,38 +484,62 @@
     }
   }
     // Check subscription status from localStorage
-    function checkSubscription() {
-      // Check subscription status on page load
-document.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem('token');
+  function checkSubscription() {
+  // Check subscription status on page load
+  document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem('token');
 
-  if (!token) {
-    window.location.href = "subscribe.html";
-    return;
-  }
+    if (!token) {
+      localStorage.clear();
+      window.location.href = "subscribe.html";
+      return;
+    }
 
-  try {
-    const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`
+    try {
+      const response = await fetch('https://famsbets.onrender.com/api/auth/subscription-status', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // If token is expired/invalid by status
+      if (response.status === 401) {
+        console.warn("Token expired/invalid — clearing storage and redirecting.");
+        localStorage.clear();
+        window.location.href = "subscribe.html";
+        return;
       }
-    });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok || data.subscriptionStatus !== 'active') {
+      // If backend explicitly reports token problem
+      if (data.error === "Invalid or expired token") {
+        console.warn("Token invalid or expired (from response) — clearing storage and redirecting.");
+        localStorage.clear();
+        window.location.href = "subscribe.html";
+        return;
+      }
+
+      // If subscription is not active
+      if (data.subscriptionStatus !== 'active') {
+        console.warn("Subscription not active — redirecting.");
+        window.location.href = "subscribe.html";
+        return;
+      }
+
+      // All good — no action needed
+
+    } catch (error) {
+      console.error("Failed to check subscription status:", error);
+      localStorage.clear();
       window.location.href = "subscribe.html";
     }
-  } catch (error) {
-    console.error("Failed to check subscription status:", error);
-    window.location.href = "subscribe.html";
-  }
-});
+  });
+}
 
-    }
-
-    const formatDate = (dateStr) => {
+const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   const day = date.getDate();
   const month = date.toLocaleString('default', { month: 'long' }); // full month name
@@ -554,7 +578,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           </div>
         `).join('');
       } catch (error) {
-        container.innerHTML = `<div class="error">No data available</div>`;
+         container.innerHTML = `<div class="error">The EV picks have not been uploaded yet. Please check back later.</div>`;
+
       }
     }
     // Run on page load
