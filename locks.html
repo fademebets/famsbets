@@ -504,12 +504,12 @@
 
   <script>
 
-  async function checkSubscriptionAndLoadData() {
+ async function checkSubscriptionAndLoadData() {
   const token = localStorage.getItem('token');
 
   if (!token) {
-    console.log('No token found, redirecting to subscribe page');
-    window.location.href = "subscribe.html";
+    console.log('No token found, redirecting to login page');
+    window.location.href = "login.html";
     return false;
   }
 
@@ -526,7 +526,7 @@
     if (response.status === 401) {
       console.warn('Token expired or invalid — clearing storage and redirecting.');
       localStorage.clear();
-      window.location.href = "subscribe.html";
+      window.location.href = "login.html";
       return false;
     }
 
@@ -536,28 +536,29 @@
     if (data.error === "Invalid or expired token") {
       console.warn('Token invalid or expired (from response) — clearing storage and redirecting.');
       localStorage.clear();
-      window.location.href = "subscribe.html";
+      window.location.href = "login.html";
       return false;
     }
 
     console.log('Subscription status:', data);
 
+    // If subscription inactive
     if (data.subscriptionStatus !== 'active') {
-      console.log('Subscription not active, redirecting');
+      console.log('Subscription not active, redirecting to subscription page.');
       window.location.href = "subscribe.html";
       return false;
     }
 
+    // All good — continue loading data
     return true;
 
   } catch (error) {
     console.error("Failed to check subscription status:", error);
-    // Optionally clear token on fetch error too if you want
-    // localStorage.clear();
-    return true;
+    localStorage.clear();
+    window.location.href = "login.html";
+    return false;
   }
 }
-
 
     // Load lock picks from API
     async function loadLockPicks() {

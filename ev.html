@@ -491,7 +491,7 @@
 
     if (!token) {
       localStorage.clear();
-      window.location.href = "subscribe.html";
+      window.location.href = "login.html"; // redirect to login if no token
       return;
     }
 
@@ -508,7 +508,7 @@
       if (response.status === 401) {
         console.warn("Token expired/invalid — clearing storage and redirecting.");
         localStorage.clear();
-        window.location.href = "subscribe.html";
+        window.location.href = "login.html";
         return;
       }
 
@@ -518,7 +518,7 @@
       if (data.error === "Invalid or expired token") {
         console.warn("Token invalid or expired (from response) — clearing storage and redirecting.");
         localStorage.clear();
-        window.location.href = "subscribe.html";
+        window.location.href = "login.html";
         return;
       }
 
@@ -534,7 +534,7 @@
     } catch (error) {
       console.error("Failed to check subscription status:", error);
       localStorage.clear();
-      window.location.href = "subscribe.html";
+      window.location.href = "login.html";
     }
   });
 }
