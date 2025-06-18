@@ -874,22 +874,19 @@
 
 </body>
 <script>
-
-
   const token = localStorage.getItem('token');
 
   // Show/hide login buttons based on token existence
-  if (token) {
-    document.getElementById('loginBtnNav').style.display = 'none';
-    document.getElementById('loginBtnSidebar').style.display = 'none';
-  } else {
-    document.getElementById('loginBtnNav').style.display = 'block';
-    document.getElementById('loginBtnSidebar').style.display = 'block';
-  }
-
   document.addEventListener("DOMContentLoaded", () => {
+    if (token) {
+      document.getElementById('loginBtnNav').style.display = 'none';
+      document.getElementById('loginBtnSidebar').style.display = 'none';
+    } else {
+      document.getElementById('loginBtnNav').style.display = 'block';
+      document.getElementById('loginBtnSidebar').style.display = 'block';
+    }
+
     const currentPage = window.location.pathname.split('/').pop();
-    const token = localStorage.getItem('token');
 
     // ✅ Check subscription status and redirect if active
     if (token) {
@@ -903,7 +900,6 @@
       .then(response => response.json())
       .then(data => {
         if (data.subscriptionStatus === 'active') {
-          // If already on profile page, skip redirect to avoid reload loop
           if (currentPage !== 'notifications.html') {
             window.location.href = 'notifications.html';
           }
@@ -915,7 +911,7 @@
     }
   });
 
-
+  // Stripe Public Key Init (always outside DOMContentLoaded)
   const stripe = Stripe('pk_live_51RQgUTLfWCnW3JgTWjmvt7M2xuDqrctoeMvJ4WAfMCj8BueXqIwmVfpraxcUgsEyd9eovWFJgvVsIQKUp64M4Vbk00bY75IWOm');
 
   // Sidebar functionality
@@ -935,35 +931,30 @@
     overlay.classList.remove('show');
   }
 
-  // Close sidebar when window is resized to desktop view
-  window.addEventListener('resize', function() {
+  window.addEventListener('resize', () => {
     if (window.innerWidth > 768) {
       closeSidebar();
     }
   });
 
-  // Toggle desktop dropdown
+  // Dropdowns (desktop and mobile)
   function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.classList.toggle('show');
   }
 
-  // Toggle mobile dropdown
   function toggleMobileDropdown() {
     const mobileDropdownContent = document.getElementById('mobileDropdownContent');
     mobileDropdownContent.classList.toggle('show');
   }
 
-  // Close dropdowns when clicking outside
-  window.onclick = function(event) {
+  window.onclick = function (event) {
     if (!event.target.matches('.dropbtn') && !event.target.matches('.mobile-dropdown-btn')) {
-      // Close desktop dropdown
       const dropdowns = document.getElementsByClassName("dropdown-content");
       for (let i = 0; i < dropdowns.length; i++) {
         dropdowns[i].classList.remove('show');
       }
 
-      // Close mobile dropdown
       const mobileDropdowns = document.getElementsByClassName("mobile-dropdown-content");
       for (let i = 0; i < mobileDropdowns.length; i++) {
         mobileDropdowns[i].classList.remove('show');
@@ -971,48 +962,53 @@
     }
   }
 
-  // Stripe subscription functionality
+  // Stripe subscription handling
+  document.querySelectorAll('.subscribe-button').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const plan = e.target.dataset.plan;
+      const emailInput = document.getElementById('email');
 
- document.querySelectorAll('.subscribe-button').forEach(button => {
-  button.addEventListener('click', async (e) => {
-    const plan = e.target.dataset.plan;
-    const email = document.getElementById('email').value.trim();
-
-    if (!email) {
-      alert('Please enter your email to subscribe.');
-      return;
-    }
-
-    try {
-      const response = await fetch('https://famsbets.onrender.com/api/subscription/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ plan, email })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(errorData.message || 'Failed to create checkout session.');
+      if (!emailInput) {
+        alert('Email input not found.');
         return;
       }
 
-      const session = await response.json();
-      const result = await stripe.redirectToCheckout({ sessionId: session.id });
-
-      if (result.error) {
-        alert(result.error.message);
+      const email = emailInput.value.trim();
+      if (!email) {
+        alert('Please enter your email to subscribe.');
+        return;
       }
 
-    } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred. Please try again.');
-    }
-  });
-});
+      try {
+        const response = await fetch('https://famsbets.onrender.com/api/subscription/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ plan, email })
+        });
 
+        const responseData = await response.json();
+
+        if (!response.ok) {
+          alert(responseData.message || 'Failed to create checkout session.');
+          return;
+        }
+
+        const result = await stripe.redirectToCheckout({ sessionId: responseData.id });
+
+        if (result.error) {
+          alert(result.error.message);
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+  });
 
 </script>
+
 
 </html>
