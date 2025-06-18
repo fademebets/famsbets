@@ -19,6 +19,9 @@ router.get('/subscription-status', authController.getSubscriptionStatus);
 
 router.post('/unsubscribe', authMiddleware, authController.unsubscribeUser);
 
+router.post('/activate-subscription', authController.activateSubscriptionByEmail);
+
+
 
 
 module.exports = router;

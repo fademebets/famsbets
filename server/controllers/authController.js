@@ -198,3 +198,32 @@ exports.unsubscribeUser = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while processing your unsubscription request.' });
   }
 };
+
+
+exports.activateSubscriptionByEmail = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // If already active
+    if (user.subscriptionStatus === 'active') {
+      return res.status(400).json({ message: 'Subscription is already active for this user.' });
+    }
+
+    // Update status to active
+    user.subscriptionStatus = 'active';
+    await user.save();
+
+    res.json({ message: `Subscription activated for ${email}` });
+
+  } catch (error) {
+    console.error('Error in activateSubscriptionByEmail:', error);
+    res.status(500).json({ message: 'An error occurred while activating the subscription.' });
+  }
+};
