@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
 const User = require('../models/User');
-
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -20,32 +19,41 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     const eventType = event.type;
     console.log(`📩 Event received: ${eventType}`);
 
-    const subscriptionEvents = [
-      'customer.subscription.created',
-      'customer.subscription.updated',
-      'customer.subscription.deleted'
-    ];
-
-    if (subscriptionEvents.includes(eventType)) {
+    // Subscription events
+    if (['customer.subscription.created', 'customer.subscription.updated'].includes(eventType)) {
       const subscription = event.data.object;
       const customerId = subscription.customer;
       const status = subscription.status;
+      const periodEnd = new Date(subscription.current_period_end * 1000);
 
       const user = await User.findOne({ stripeCustomerId: customerId });
       if (user) {
-        user.subscriptionStatus = eventType === 'customer.subscription.deleted' ? 'inactive' : status;
+        user.subscriptionStatus = status;
+        user.subscriptionEndDate = periodEnd;
         await user.save();
-        console.log(`🔄 User ${user.email} subscription set to ${user.subscriptionStatus}.`);
+        console.log(`🔄 User ${user.email} updated: ${status}, ends at ${periodEnd}`);
       } else {
         console.warn(`⚠️ No user found for customer ID: ${customerId}`);
       }
     }
 
-    // Optionally log first successful payment
+    // Subscription deleted
+    if (eventType === 'customer.subscription.deleted') {
+      const subscription = event.data.object;
+      const customerId = subscription.customer;
+
+      const user = await User.findOne({ stripeCustomerId: customerId });
+      if (user) {
+        user.subscriptionStatus = 'inactive';
+        await user.save();
+        console.log(`❌ User ${user.email} subscription set to inactive`);
+      }
+    }
+
+    // Optionally log successful payments
     if (eventType === 'invoice.payment_succeeded') {
       const invoice = event.data.object;
-      const customerId = invoice.customer;
-      console.log(`💰 Payment succeeded for customer: ${customerId}`);
+      console.log(`💰 Payment succeeded for customer: ${invoice.customer}`);
     }
 
     // Optionally log checkout session completions

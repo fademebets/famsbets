@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   stripeCustomerId: String,
   subscriptionStatus: { type: String, default: 'inactive' },
   resetCode: { type: String },
+    subscriptionEndDate: { type: Date },  // <-- new field
   resetCodeExpiry: { type: Date },
 });
 

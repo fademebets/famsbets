@@ -2,7 +2,6 @@ const User = require('../models/User');
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-
 exports.createCheckoutSession = async (req, res) => {
   try {
     const { email, plan } = req.body;
@@ -11,16 +10,15 @@ exports.createCheckoutSession = async (req, res) => {
       return res.status(400).json({ message: 'Email and subscription plan are required.' });
     }
 
-    // 1️⃣ Find user by email (enforce unique)
+    // Find or create user
     let user = await User.findOne({ email });
     if (!user) {
       user = new User({ email });
       await user.save();
     }
 
-    // 2️⃣ Ensure Stripe Customer exists
+    // Ensure Stripe Customer
     let stripeCustomerId = user.stripeCustomerId;
-
     if (stripeCustomerId) {
       try {
         await stripe.customers.retrieve(stripeCustomerId);
@@ -41,19 +39,17 @@ exports.createCheckoutSession = async (req, res) => {
       await user.save();
     }
 
-    // 3️⃣ Optional: Cancel existing active subscriptions
+    // Cancel existing active subscriptions
     const subscriptions = await stripe.subscriptions.list({
       customer: stripeCustomerId,
       status: 'active',
     });
-
     for (const subscription of subscriptions.data) {
       await stripe.subscriptions.cancel(subscription.id);
     }
 
-    // 4️⃣ Define price based on plan
-    let priceData;
-
+    // Price data & cancel_at
+    let priceData, cancelAfterSeconds;
     if (plan === 'monthly') {
       priceData = {
         currency: 'usd',
@@ -61,6 +57,7 @@ exports.createCheckoutSession = async (req, res) => {
         unit_amount: 299,
         recurring: { interval: 'month' },
       };
+      cancelAfterSeconds = 30 * 24 * 60 * 60;
     } else if (plan === 'quarterly') {
       priceData = {
         currency: 'usd',
@@ -68,6 +65,7 @@ exports.createCheckoutSession = async (req, res) => {
         unit_amount: 799,
         recurring: { interval: 'month', interval_count: 3 },
       };
+      cancelAfterSeconds = 182 * 24 * 60 * 60;
     } else if (plan === 'yearly') {
       priceData = {
         currency: 'usd',
@@ -75,16 +73,20 @@ exports.createCheckoutSession = async (req, res) => {
         unit_amount: 2999,
         recurring: { interval: 'year' },
       };
+      cancelAfterSeconds = 365 * 24 * 60 * 60;
     } else {
       return res.status(400).json({ message: 'Invalid subscription plan selected.' });
     }
 
-    // 5️⃣ Create Stripe Checkout Session
+    // Create Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       payment_method_types: ['card'],
       line_items: [{ price_data: priceData, quantity: 1 }],
       mode: 'subscription',
+      subscription_data: {
+        cancel_at: Math.floor(Date.now() / 1000) + cancelAfterSeconds,
+      },
       success_url: `https://www.fademebets.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: 'https://www.fademebets.com/subscribe.html',
     });
