@@ -2,6 +2,13 @@ const User = require('../models/User');
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Mapped price IDs for subscription plans
+const PRICES = {
+  monthly: 'price_1RbHXtLfWCnW3JgT8k6UbFOv',
+  quarterly: 'price_1RbHYnLfWCnW3JgT06wzhlLV',
+  yearly: 'price_1RbHZSLfWCnW3JgTqGo1LsHe',
+};
+
 exports.createCheckoutSession = async (req, res) => {
   try {
     const { email, plan } = req.body;
@@ -48,33 +55,9 @@ exports.createCheckoutSession = async (req, res) => {
       await stripe.subscriptions.cancel(subscription.id);
     }
 
-    // Price data & cancel_at
-    let priceData, cancelAfterSeconds;
-    if (plan === 'monthly') {
-      priceData = {
-        currency: 'usd',
-        product_data: { name: 'FadeMeBets Monthly Subscription' },
-        unit_amount: 299,
-        recurring: { interval: 'month' },
-      };
-      cancelAfterSeconds = 30 * 24 * 60 * 60;
-    } else if (plan === 'quarterly') {
-      priceData = {
-        currency: 'usd',
-        product_data: { name: 'FadeMeBets Quarterly Subscription' },
-        unit_amount: 799,
-        recurring: { interval: 'month', interval_count: 3 },
-      };
-      cancelAfterSeconds = 182 * 24 * 60 * 60;
-    } else if (plan === 'yearly') {
-      priceData = {
-        currency: 'usd',
-        product_data: { name: 'FadeMeBets Yearly Subscription' },
-        unit_amount: 2999,
-        recurring: { interval: 'year' },
-      };
-      cancelAfterSeconds = 365 * 24 * 60 * 60;
-    } else {
+    // Validate selected plan and get price ID
+    const priceId = PRICES[plan];
+    if (!priceId) {
       return res.status(400).json({ message: 'Invalid subscription plan selected.' });
     }
 
@@ -82,15 +65,13 @@ exports.createCheckoutSession = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       payment_method_types: ['card'],
-      line_items: [{ price_data: priceData, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      subscription_data: {
-        cancel_at: Math.floor(Date.now() / 1000) + cancelAfterSeconds,
-      },
       success_url: `https://www.fademebets.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: 'https://www.fademebets.com/subscribe.html',
     });
 
+    // Return session ID
     res.json({ id: session.id });
 
   } catch (error) {
