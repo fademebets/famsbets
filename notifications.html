@@ -331,6 +331,30 @@
           width: 100%;
         }
 
+
+         .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 150px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+
+  .modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+
         .notification-status {
           margin-top: 20px;
           padding: 12px;
@@ -649,8 +673,10 @@
       </div>
     </div>
        <div class="content">
+        <h1>User Profile</h1>
+  <p>Manage your personal account settings, password, and subscription preferences below.</p>
   <h1>Change Password</h1>
-  <p>Update your password to keep your account secure.</p>
+<p>If you just subscribed, we recommend changing your password to keep your account secure.</p>
 
  <form id="change-password-form" onsubmit="handleChangePassword(event)">
   <div class="form-group">
@@ -677,10 +703,21 @@
     </button>
   </div>
 
-  <div style="margin-top: 15px; text-align: center;">
-  <button onclick="handleCheckSubscription()" class="save-button" >
+ <div style="margin-top: 15px; text-align: center;">
+  <button onclick="openCancelModal()" class="save-button">
     Cancel Subscription
   </button>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div id="cancelModal" class="modal">
+  <div class="modal-content">
+    <h3>Are you sure you want to cancel your subscription?</h3>
+    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px;">
+      <button onclick="confirmCancelSubscription()" class="save-button" style="background-color: #f44336;">Yes</button>
+      <button onclick="closeCancelModal()" class="save-button" style="background-color: #4caf50;">No</button>
+    </div>
+  </div>
 </div>
 
 <!-- Message display div -->
@@ -691,6 +728,19 @@
 
    <script>
 
+ function openCancelModal() {
+    document.getElementById("cancelModal").style.display = "block";
+  }
+
+  function closeCancelModal() {
+    document.getElementById("cancelModal").style.display = "none";
+  }
+
+  function confirmCancelSubscription() {
+    closeCancelModal();
+    handleCheckSubscription(); // Call your existing cancellation function
+  }
+  
 
 async function handleCheckSubscription() {
   const statusDiv = document.getElementById("subscription-status-message");
