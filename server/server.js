@@ -10,7 +10,7 @@ const adminRoutes = require('./routes/adminAuthRoutes');
 const evRoutes = require('./routes/evRoutes');
 const lockRoutes = require('./routes/lockRoutes');
 const standingsRoutes = require("./routes/standingsRoutes");
-const stripeWebhookRoute = require('./routes/stripeWebhook');
+// const stripeWebhookRoute = require('./routes/stripeWebhook');
 const confirmSessionRoute = require('./routes/confirmsession');
 const authRoutes = require('./routes/authRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
@@ -29,7 +29,7 @@ app.use(cors({
 }));
 
 // Webhook route (before express.json())
-app.use('/api/stripe', stripeWebhookRoute);
+// app.use('/api/stripe', stripeWebhookRoute);
 
 // Body parser middleware
 app.use(express.json());

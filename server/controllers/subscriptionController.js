@@ -1,14 +1,9 @@
 const User = require('../models/User');
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const PRICES = require('../config/prices');
 
-// Mapped price IDs for subscription plans
-const PRICES = {
-  monthly: 'price_1RbHXtLfWCnW3JgT8k6UbFOv',
-  quarterly: 'price_1RbHYnLfWCnW3JgT06wzhlLV',
-  yearly: 'price_1RbHZSLfWCnW3JgTqGo1LsHe',
-};
-
+// Create Checkout Session
 exports.createCheckoutSession = async (req, res) => {
   try {
     const { email, plan } = req.body;
@@ -46,6 +41,12 @@ exports.createCheckoutSession = async (req, res) => {
       await user.save();
     }
 
+    // Validate selected plan and get price ID
+    const priceId = PRICES[plan];
+    if (!priceId) {
+      return res.status(400).json({ message: 'Invalid subscription plan selected.' });
+    }
+
     // Cancel existing active subscriptions
     const subscriptions = await stripe.subscriptions.list({
       customer: stripeCustomerId,
@@ -55,27 +56,71 @@ exports.createCheckoutSession = async (req, res) => {
       await stripe.subscriptions.cancel(subscription.id);
     }
 
-    // Validate selected plan and get price ID
-    const priceId = PRICES[plan];
-    if (!priceId) {
-      return res.status(400).json({ message: 'Invalid subscription plan selected.' });
-    }
-
     // Create Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      success_url: `https://www.fademebets.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `https://www.fademebets.com/success.html?session_id={CHECKOUT_SESSION_ID}&plan=${plan}&email=${encodeURIComponent(email)}`,
       cancel_url: 'https://www.fademebets.com/subscribe.html',
     });
 
-    // Return session ID
     res.json({ id: session.id });
 
   } catch (error) {
     console.error('Stripe session error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Confirm Subscription (after successful payment)
+exports.confirmSubscription = async (req, res) => {
+  try {
+    const { sessionId, email, plan } = req.body;
+    if (!sessionId || !email || !plan) {
+      return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (session.payment_status !== 'paid') {
+      return res.status(400).json({ message: 'Payment not completed.' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Prevent duplicate confirmation for the same session
+    if (user.lastSessionId === sessionId) {
+      return res.status(400).json({ message: 'This session has already been processed.' });
+    }
+
+    // Calculate end date based on plan
+    const now = new Date();
+    let endDate;
+    if (plan === 'monthly') {
+      endDate = new Date(now.setMonth(now.getMonth() + 1));
+    } else if (plan === 'quarterly') {
+      endDate = new Date(now.setMonth(now.getMonth() + 3));
+    } else if (plan === 'yearly') {
+      endDate = new Date(now.setFullYear(now.getFullYear() + 1));
+    } else {
+      return res.status(400).json({ message: 'Invalid plan.' });
+    }
+
+    // Update user subscription status, end date, and store session ID
+    user.subscriptionStatus = 'active';
+    user.subscriptionEndDate = endDate;
+    user.lastSessionId = sessionId;
+    await user.save();
+
+    res.json({ message: 'Subscription activated successfully.', subscriptionEndDate: endDate });
+
+  } catch (error) {
+    console.error('Confirm subscription error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };

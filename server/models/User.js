@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   resetCode: { type: String },
     subscriptionEndDate: { type: Date },  // <-- new field
   resetCodeExpiry: { type: Date },
+  lastSessionId: { type: String },
+
 });
 
 module.exports = mongoose.model('User', userSchema);
