@@ -1,6 +1,6 @@
 // config/prices.js (new file for clean separation)
 module.exports = {
-  monthly: 'price_1RbzcuLfWCnW3JgTnYuhvbON',
-  quarterly: 'price_1RbzeCLfWCnW3JgTt1GLdYmH',
-  yearly: 'price_1Rbzf5LfWCnW3JgTTgXL3GyY',
+  monthly: 'price_1RbHXtLfWCnW3JgT8k6UbFOv',
+  quarterly: 'price_1RbHYnLfWCnW3JgT06wzhlLV',
+  yearly: 'price_1RbHZSLfWCnW3JgTqGo1LsHe',
 };
