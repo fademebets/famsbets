@@ -917,6 +917,11 @@
         return;
       }
 
+      // Save JWT token to localStorage
+      if (result.token) {
+        localStorage.setItem('token', result.token);
+      }
+
       // Notify user and redirect to notifications/dashboard page
       alert('Subscription activated successfully!');
       window.location.href = '/notifications.html';
@@ -930,7 +935,7 @@
   // Automatically call finalizeSubscription when page loads
   window.onload = finalizeSubscription;
 
-  // Sidebar toggle for desktop and mobile (if your site uses this)
+  // Sidebar toggle for desktop and mobile
   function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -971,6 +976,7 @@
     }
   }
 </script>
+
 
 
 </body>

@@ -117,7 +117,19 @@ exports.confirmSubscription = async (req, res) => {
     user.lastSessionId = sessionId;
     await user.save();
 
-    res.json({ message: 'Subscription activated successfully.', subscriptionEndDate: endDate });
+    // Create JWT token for this user
+    const token = jwt.sign(
+      { userId: user._id, email: user.email, subscriptionStatus: 'active' },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    // Return success message, end date, and token
+    res.json({
+      message: 'Subscription activated successfully.',
+      subscriptionEndDate: endDate,
+      token
+    });
 
   } catch (error) {
     console.error('Confirm subscription error:', error);
