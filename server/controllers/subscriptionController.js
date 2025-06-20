@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const PRICES = require('../config/prices');
+const jwt = require('jsonwebtoken');
 
 // Create Checkout Session
 exports.createCheckoutSession = async (req, res) => {
