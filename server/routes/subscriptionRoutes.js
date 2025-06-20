@@ -4,5 +4,7 @@ const subscriptionController = require('../controllers/subscriptionController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 router.post('/create-checkout-session', subscriptionController.createCheckoutSession);
+router.post('/confirm-subscription', subscriptionController.confirmSubscription);
+
 
 module.exports = router;

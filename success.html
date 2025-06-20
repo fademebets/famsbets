@@ -886,73 +886,79 @@
         </div>
     </div>
 
-    <script>
-<<<<<<< Updated upstream
-  // Initialize Stripe with your public key
-  const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
-
-  // Parse session_id from URL query parameters
-=======
-
-const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBaYhMxRv5lqn9YJiyHv8anY1Rob7MzxlBPj9MYjWPg009Cb7mYoi');
->>>>>>> Stashed changes
+<script>
+  // Parse query parameters from the URL
   const urlParams = new URLSearchParams(window.location.search);
   const sessionId = urlParams.get('session_id');
+  const email = urlParams.get('email');
+  const plan = urlParams.get('plan');
 
-  // Function to confirm subscription by calling backend and store JWT token
+  // Function to finalize subscription by confirming session with backend
   async function finalizeSubscription() {
-    if (!sessionId) {
-      alert('Invalid session.');
+    if (!sessionId || !email || !plan) {
+      alert('Missing subscription details from URL.');
       return;
     }
 
     try {
-      // Call backend API to confirm the subscription session and get JWT
-      const response = await fetch('https://famsbets.onrender.com/api/stripe/confirm-session', {
+      const response = await fetch('https://famsbets.onrender.com/api/subscription/confirm-subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({ sessionId, email, plan }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        console.error(error.message);
-        alert(error.message || 'Subscription confirmation failed.');
+        console.error(result.message);
+        alert(result.message || 'Subscription confirmation failed.');
         return;
       }
 
-      // Extract JWT token from response
-      const { token } = await response.json();
-
-      // Save token to localStorage for authenticated requests
-      localStorage.setItem('token', token);
-
-      // Redirect user to notifications page or any other dashboard
+      // Notify user and redirect to notifications/dashboard page
+      alert('Subscription activated successfully!');
       window.location.href = '/notifications.html';
+
     } catch (error) {
       console.error(error);
-      alert('Error finalizing subscription.');
+      alert('An error occurred while finalizing your subscription.');
     }
   }
 
-  // Immediately call finalizeSubscription on script load
-  finalizeSubscription();
+  // Automatically call finalizeSubscription when page loads
+  window.onload = finalizeSubscription;
 
-<<<<<<< Updated upstream
-  // Dropdown toggle function for desktop
-=======
+  // Sidebar toggle for desktop and mobile (if your site uses this)
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
 
+  // Close sidebar when clicking any mobile navigation link
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
->>>>>>> Stashed changes
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  document.querySelectorAll('.mobile-nav a').forEach(link => {
+    link.addEventListener('click', closeSidebar);
+  });
+
+  // Dropdown menu toggle
   function toggleDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
     dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
   }
 
-  // Close dropdown if clicking outside of dropdown button
+  // Close dropdown if clicking outside
   window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
       const dropdowns = document.getElementsByClassName("dropdown-content");
@@ -964,46 +970,8 @@ const stripe = Stripe('pk_test_51RQgUTLfWCnW3JgTxJOIR45DLsRrpEBWGmlZLFx6ukS9BzBa
       }
     }
   }
-
-  // Dummy function to check subscription (update with real logic as needed)
-  function checkSubscription() {
-    // For real use: check localStorage token or subscription status here
-    const prompt = document.querySelector('.subscription-prompt');
-    // Example: show or hide subscription prompt based on token presence
-  }
-
-  // Call checkSubscription on window load
-  window.onload = checkSubscription;
-
-  // Sidebar toggle for desktop and mobile
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('show');
-  }
-
-  // Close sidebar function
-  function closeSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    sidebar.classList.remove('open');
-    overlay.classList.remove('show');
-  }
-
-  // Toggle dropdown for mobile menu
-  function toggleMobileDropdown() {
-    const dropdownContent = document.getElementById('mobileDropdownContent');
-    dropdownContent.classList.toggle('show');
-  }
-
-  // Close sidebar when clicking any mobile navigation link
-  document.querySelectorAll('.mobile-nav a').forEach(link => {
-    link.addEventListener('click', closeSidebar);
-  });
 </script>
+
 
 </body>
 </html>
